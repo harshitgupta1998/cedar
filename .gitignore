@@ -1,0 +1,16 @@
+# Xcode and local build output
+.DS_Store
+build/
+build-*/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcuserdatad/
+.env
+.env.*
+!.env.example
+# Local signing overrides
+Local.xcconfig
+# Credentials and provisioning
+*.p12
+*.mobileprovision

@@ -1,0 +1,2 @@
+// Keep signing configuration local to each developer.
+#include? "Local.xcconfig"

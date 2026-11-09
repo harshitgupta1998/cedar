@@ -1,0 +1,472 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		12192AD6F0CE44104F091858 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE28C590DB975C293C86B3F /* WelcomeView.swift */; };
+		5EBAD305F41700FBC832E76A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */; };
+		728FDC4664A3B800FE097236 /* CedarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED16B67665D0387EB456271 /* CedarApp.swift */; };
+		7D505FBE90508AEBF50DB46A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */; };
+		A656B7B229F98D0DD593849E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A3A30D7F21B14201A042863 /* Assets.xcassets */; };
+		E341AF42333AB1FA549565D4 /* CedarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F584625EE76EE94CB1808439 /* CedarUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DAFE19137DDB4A6635F9F730 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD07E2FB67101D5952CE33F9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1EB16D87A68524D0C04A0F0C;
+			remoteInfo = Cedar;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0A3A30D7F21B14201A042863 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4E94FCD87A319254CEB81E3C /* CedarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CedarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AD1FFD03D1C90974A335CDC /* Cedar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cedar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8910A1DA5E075676003576B8 /* Config.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		8ED16B67665D0387EB456271 /* CedarApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CedarApp.swift; sourceTree = "<group>"; };
+		E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		ECE28C590DB975C293C86B3F /* WelcomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		F584625EE76EE94CB1808439 /* CedarUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CedarUITests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2954BD9AF115FFF015A06987 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D505FBE90508AEBF50DB46A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6C69EC7166D30BBCD196341 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EBAD305F41700FBC832E76A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A1ADE8FFFE6F4D8E5AD9B9B9 = {
+			isa = PBXGroup;
+			children = (
+				C04F0B9F7374EF48C2E44C89 /* Products */,
+				DCBF607F385469DA38AD3B9C /* Frameworks */,
+				B19C2F5F0AAF33E0BEC284BE /* Cedar */,
+				ECD568E2C2DEDEC0E8421044 /* CedarUITests */,
+				8910A1DA5E075676003576B8 /* Config.xcconfig */,
+			);
+			sourceTree = "<group>";
+		};
+		B19C2F5F0AAF33E0BEC284BE /* Cedar */ = {
+			isa = PBXGroup;
+			children = (
+				8ED16B67665D0387EB456271 /* CedarApp.swift */,
+				ECE28C590DB975C293C86B3F /* WelcomeView.swift */,
+				0A3A30D7F21B14201A042863 /* Assets.xcassets */,
+			);
+			path = Cedar;
+			sourceTree = "<group>";
+		};
+		C04F0B9F7374EF48C2E44C89 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5AD1FFD03D1C90974A335CDC /* Cedar.app */,
+				4E94FCD87A319254CEB81E3C /* CedarUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CB685D59D0ED813A72FB7470 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		DCBF607F385469DA38AD3B9C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CB685D59D0ED813A72FB7470 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		ECD568E2C2DEDEC0E8421044 /* CedarUITests */ = {
+			isa = PBXGroup;
+			children = (
+				F584625EE76EE94CB1808439 /* CedarUITests.swift */,
+			);
+			path = CedarUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1EB16D87A68524D0C04A0F0C /* Cedar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A37716970890E63D47D56E03 /* Build configuration list for PBXNativeTarget "Cedar" */;
+			buildPhases = (
+				7516ECCF0548B53264754250 /* Sources */,
+				2954BD9AF115FFF015A06987 /* Frameworks */,
+				5E3BE90A1A2F6D9AC65C3264 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Cedar;
+			productName = Cedar;
+			productReference = 5AD1FFD03D1C90974A335CDC /* Cedar.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CF9866BA9D148CEAC947189C /* CedarUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5FA69027A492B4D3E49E84CE /* Build configuration list for PBXNativeTarget "CedarUITests" */;
+			buildPhases = (
+				C1DC1AEF538B044C7DBCC0A5 /* Sources */,
+				A6C69EC7166D30BBCD196341 /* Frameworks */,
+				6C3F2608AC6850BC1A6E98E2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DBC1FDB1B2902CC1A167D140 /* PBXTargetDependency */,
+			);
+			name = CedarUITests;
+			productName = CedarUITests;
+			productReference = 4E94FCD87A319254CEB81E3C /* CedarUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AD07E2FB67101D5952CE33F9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					1EB16D87A68524D0C04A0F0C = {
+						ProvisioningStyle = Automatic;
+					};
+					CF9866BA9D148CEAC947189C = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 79D2A00C53A2DAE1E08E2C2F /* Build configuration list for PBXProject "Cedar" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1ADE8FFFE6F4D8E5AD9B9B9;
+			productRefGroup = C04F0B9F7374EF48C2E44C89 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1EB16D87A68524D0C04A0F0C /* Cedar */,
+				CF9866BA9D148CEAC947189C /* CedarUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5E3BE90A1A2F6D9AC65C3264 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A656B7B229F98D0DD593849E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6C3F2608AC6850BC1A6E98E2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7516ECCF0548B53264754250 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				728FDC4664A3B800FE097236 /* CedarApp.swift in Sources */,
+				12192AD6F0CE44104F091858 /* WelcomeView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1DC1AEF538B044C7DBCC0A5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E341AF42333AB1FA549565D4 /* CedarUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DBC1FDB1B2902CC1A167D140 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Cedar;
+			target = 1EB16D87A68524D0C04A0F0C /* Cedar */;
+			targetProxy = DAFE19137DDB4A6635F9F730 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		321A2DEC947BBD77680A3086 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8910A1DA5E075676003576B8 /* Config.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Cedar;
+			};
+			name = Debug;
+		};
+		7C71A4D4E6B2E50099496C50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8910A1DA5E075676003576B8 /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Cedar;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		855FA43D53F26C4FC7CA1C29 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		9EF31039EDFF481A40C14E7F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B44E63642E2488B173C8F712 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8910A1DA5E075676003576B8 /* Config.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Cedar;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F52C65CA37B0B1CA24D54DA4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8910A1DA5E075676003576B8 /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Cedar;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5FA69027A492B4D3E49E84CE /* Build configuration list for PBXNativeTarget "CedarUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B44E63642E2488B173C8F712 /* Release */,
+				321A2DEC947BBD77680A3086 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		79D2A00C53A2DAE1E08E2C2F /* Build configuration list for PBXProject "Cedar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				855FA43D53F26C4FC7CA1C29 /* Debug */,
+				9EF31039EDFF481A40C14E7F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A37716970890E63D47D56E03 /* Build configuration list for PBXNativeTarget "Cedar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F52C65CA37B0B1CA24D54DA4 /* Release */,
+				7C71A4D4E6B2E50099496C50 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AD07E2FB67101D5952CE33F9 /* Project object */;
+}
