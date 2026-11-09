@@ -47,7 +47,7 @@ The example test command requires an iPhone 13 simulator named **Cedar iPhone 13
 
 ## Current milestone
 
-See [development status](docs/development-status.md). The first checkpoint is a reproducible welcome-screen build installed on the actual iPhone 13. Simulator success does not complete the physical-device checkpoint.
+See [development status](docs/development-status.md). The welcome-screen checkpoint is verified: the simulator navigation test passes and the signed app installs and launches on the actual iPhone 13 (iOS 26.5.2). Recording and speech capabilities remain separate future checkpoints.
 
 ## License
 
