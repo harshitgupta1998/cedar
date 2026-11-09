@@ -8,14 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		12192AD6F0CE44104F091858 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE28C590DB975C293C86B3F /* WelcomeView.swift */; };
+		446040E50CDBBAA323C19B5A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8505B57E67DEC6FF04182B5C /* Foundation.framework */; };
+		506CBA72FB91DD7B3AA84414 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F57CDA7F77BBB70AA3B50C /* LibraryView.swift */; };
 		5EBAD305F41700FBC832E76A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */; };
+		64BBC38E2C2D450B59BB9403 /* RecordingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF6B96BBAA032BB0116677B /* RecordingStore.swift */; };
+		6A55FE384AED892F06183C39 /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F31E0C120092112C453C01 /* AudioController.swift */; };
 		728FDC4664A3B800FE097236 /* CedarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED16B67665D0387EB456271 /* CedarApp.swift */; };
 		7D505FBE90508AEBF50DB46A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */; };
+		A5CC70DC39706EAEBDD21256 /* RecordingStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D629E42FD05A6D69B540887B /* RecordingStoreTests.swift */; };
 		A656B7B229F98D0DD593849E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A3A30D7F21B14201A042863 /* Assets.xcassets */; };
 		E341AF42333AB1FA549565D4 /* CedarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F584625EE76EE94CB1808439 /* CedarUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D1E43AE32499176ED4EC7588 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD07E2FB67101D5952CE33F9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1EB16D87A68524D0C04A0F0C;
+			remoteInfo = Cedar;
+		};
 		DAFE19137DDB4A6635F9F730 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AD07E2FB67101D5952CE33F9 /* Project object */;
@@ -27,13 +39,19 @@
 
 /* Begin PBXFileReference section */
 		0A3A30D7F21B14201A042863 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		34F31E0C120092112C453C01 /* AudioController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
+		3B0AA317D5B1BBCF72EFD5D3 /* CedarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CedarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E94FCD87A319254CEB81E3C /* CedarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CedarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD1FFD03D1C90974A335CDC /* Cedar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cedar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8505B57E67DEC6FF04182B5C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8910A1DA5E075676003576B8 /* Config.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		8ED16B67665D0387EB456271 /* CedarApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CedarApp.swift; sourceTree = "<group>"; };
+		CEF6B96BBAA032BB0116677B /* RecordingStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingStore.swift; sourceTree = "<group>"; };
+		D629E42FD05A6D69B540887B /* RecordingStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingStoreTests.swift; sourceTree = "<group>"; };
 		E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		ECE28C590DB975C293C86B3F /* WelcomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		F584625EE76EE94CB1808439 /* CedarUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CedarUITests.swift; sourceTree = "<group>"; };
+		F5F57CDA7F77BBB70AA3B50C /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +60,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7D505FBE90508AEBF50DB46A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E6D7DBE509B077892C9A3FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				446040E50CDBBAA323C19B5A /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,6 +82,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1B8F027DD46FB6BE40DD43DE /* CedarTests */ = {
+			isa = PBXGroup;
+			children = (
+				D629E42FD05A6D69B540887B /* RecordingStoreTests.swift */,
+			);
+			name = CedarTests;
+			path = CedarTests;
+			sourceTree = "<group>";
+		};
 		A1ADE8FFFE6F4D8E5AD9B9B9 = {
 			isa = PBXGroup;
 			children = (
@@ -64,6 +99,7 @@
 				B19C2F5F0AAF33E0BEC284BE /* Cedar */,
 				ECD568E2C2DEDEC0E8421044 /* CedarUITests */,
 				8910A1DA5E075676003576B8 /* Config.xcconfig */,
+				1B8F027DD46FB6BE40DD43DE /* CedarTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,6 +109,9 @@
 				8ED16B67665D0387EB456271 /* CedarApp.swift */,
 				ECE28C590DB975C293C86B3F /* WelcomeView.swift */,
 				0A3A30D7F21B14201A042863 /* Assets.xcassets */,
+				CEF6B96BBAA032BB0116677B /* RecordingStore.swift */,
+				34F31E0C120092112C453C01 /* AudioController.swift */,
+				F5F57CDA7F77BBB70AA3B50C /* LibraryView.swift */,
 			);
 			path = Cedar;
 			sourceTree = "<group>";
@@ -82,6 +121,7 @@
 			children = (
 				5AD1FFD03D1C90974A335CDC /* Cedar.app */,
 				4E94FCD87A319254CEB81E3C /* CedarUITests.xctest */,
+				3B0AA317D5B1BBCF72EFD5D3 /* CedarTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -90,6 +130,7 @@
 			isa = PBXGroup;
 			children = (
 				E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */,
+				8505B57E67DEC6FF04182B5C /* Foundation.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";
@@ -129,6 +170,24 @@
 			productName = Cedar;
 			productReference = 5AD1FFD03D1C90974A335CDC /* Cedar.app */;
 			productType = "com.apple.product-type.application";
+		};
+		7147D4EBF77D19DE7920F559 /* CedarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9C83103E3ADD716D47228E69 /* Build configuration list for PBXNativeTarget "CedarTests" */;
+			buildPhases = (
+				A8DC0A85C2BEDBF3EEF45031 /* Sources */,
+				3E6D7DBE509B077892C9A3FF /* Frameworks */,
+				BF5462A2307B5E3504B7A026 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				65BA7B053AA0097FFA574176 /* PBXTargetDependency */,
+			);
+			name = CedarTests;
+			productName = CedarTests;
+			productReference = 3B0AA317D5B1BBCF72EFD5D3 /* CedarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		CF9866BA9D148CEAC947189C /* CedarUITests */ = {
 			isa = PBXNativeTarget;
@@ -180,6 +239,7 @@
 			targets = (
 				1EB16D87A68524D0C04A0F0C /* Cedar */,
 				CF9866BA9D148CEAC947189C /* CedarUITests */,
+				7147D4EBF77D19DE7920F559 /* CedarTests */,
 			);
 		};
 /* End PBXProject section */
@@ -200,6 +260,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BF5462A2307B5E3504B7A026 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -209,6 +276,17 @@
 			files = (
 				728FDC4664A3B800FE097236 /* CedarApp.swift in Sources */,
 				12192AD6F0CE44104F091858 /* WelcomeView.swift in Sources */,
+				64BBC38E2C2D450B59BB9403 /* RecordingStore.swift in Sources */,
+				6A55FE384AED892F06183C39 /* AudioController.swift in Sources */,
+				506CBA72FB91DD7B3AA84414 /* LibraryView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A8DC0A85C2BEDBF3EEF45031 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5CC70DC39706EAEBDD21256 /* RecordingStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,6 +301,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		65BA7B053AA0097FFA574176 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Cedar;
+			target = 1EB16D87A68524D0C04A0F0C /* Cedar */;
+			targetProxy = D1E43AE32499176ED4EC7588 /* PBXContainerItemProxy */;
+		};
 		DBC1FDB1B2902CC1A167D140 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Cedar;
@@ -248,6 +332,24 @@
 			};
 			name = Debug;
 		};
+		509B16B741AC9929A1571236 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8910A1DA5E075676003576B8 /* Config.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Cedar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Cedar";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		7C71A4D4E6B2E50099496C50 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8910A1DA5E075676003576B8 /* Config.xcconfig */;
@@ -256,17 +358,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Cedar/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cedar;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Cedar uses the microphone only when you tap Record, to save conversations on your iPhone.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -408,6 +512,23 @@
 			};
 			name = Release;
 		};
+		CCB56F327504BA16BE4A9428 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8910A1DA5E075676003576B8 /* Config.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Cedar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Cedar";
+			};
+			name = Debug;
+		};
 		F52C65CA37B0B1CA24D54DA4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8910A1DA5E075676003576B8 /* Config.xcconfig */;
@@ -416,17 +537,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Cedar/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cedar;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Cedar uses the microphone only when you tap Record, to save conversations on your iPhone.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -453,6 +576,15 @@
 			buildConfigurations = (
 				855FA43D53F26C4FC7CA1C29 /* Debug */,
 				9EF31039EDFF481A40C14E7F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9C83103E3ADD716D47228E69 /* Build configuration list for PBXNativeTarget "CedarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				509B16B741AC9929A1571236 /* Release */,
+				CCB56F327504BA16BE4A9428 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

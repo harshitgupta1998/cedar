@@ -1,6 +1,6 @@
 # Cedar
 
-A native, local-first iPhone app for thoughts and conversations. This repository starts with a welcome screen and an empty library. Recording, transcription, storage, and cloud services are future milestones.
+A native, local-first iPhone app for thoughts and conversations. Record conversations on your iPhone, save and play them offline, rename them, and restore items from Recently Deleted. Transcription and cloud features are future milestones.
 
 ## Run locally
 
@@ -10,7 +10,7 @@ Requirements: a Mac with Xcode 16 or later, an iOS Simulator runtime, or an iPho
 2. Select the **Cedar** scheme and an iPhone simulator.
 3. Press **Run** (Command-R).
 
-No backend, API keys, paid services, or package installations are required. The app makes no network requests and requests no permissions.
+No backend, API keys, paid services, or package installations are required. The app makes no network requests. Microphone permission is requested only when you tap Record.
 
 ## Install on your iPhone 13
 
@@ -35,7 +35,7 @@ xcodebuild -project ios/Cedar.xcodeproj -scheme Cedar \
   CODE_SIGNING_ALLOWED=NO build
 ```
 
-For the welcome → library → back UI smoke test, choose an available iPhone simulator in Xcode and press Command-U, or run:
+For the storage/recovery tests and UI recording flow, choose an available iPhone simulator in Xcode and press Command-U, or run:
 
 ```sh
 xcodebuild -project ios/Cedar.xcodeproj -scheme Cedar \
@@ -43,11 +43,11 @@ xcodebuild -project ios/Cedar.xcodeproj -scheme Cedar \
   CODE_SIGNING_ALLOWED=NO test
 ```
 
-The example test command requires an iPhone 13 simulator named **Cedar iPhone 13** to be created in Xcode's Device Hub. Another available iPhone simulator name works too.
+The example test command requires an iPhone 13 simulator named **Cedar iPhone 13** to be created in Xcode's Device Hub. Another available iPhone simulator name works too. Select a working audio input in Simulator → I/O → Audio Input for microphone tests. Run only the storage tests with `-only-testing:CedarTests` when no audio input is available.
 
 ## Current milestone
 
-See [development status](docs/development-status.md). The welcome-screen checkpoint is verified: the simulator navigation test passes and the signed app installs and launches on the actual iPhone 13 (iOS 26.5.2). Recording and speech capabilities remain separate future checkpoints.
+See [development status](docs/development-status.md). The welcome and short local-recording checkpoints are verified on the actual iPhone 13 (iOS 26.5.2), including a short locked-screen recording and audible playback. Longer recording and interruption checks remain open. See [recording checks and limits](docs/recording-checks.md).
 
 ## License
 

@@ -1,6 +1,6 @@
 import SwiftUI
 
-private enum CedarStyle {
+enum CedarStyle {
     static let forest = Color(red: 0.13, green: 0.29, blue: 0.23)
     static let cream = Color(red: 0.97, green: 0.96, blue: 0.93)
 }
@@ -73,34 +73,10 @@ struct WelcomeView: View {
     }
 }
 
-private struct LibraryView: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Image(systemName: "tray")
-                    .font(.system(size: 46, weight: .light))
-                    .padding(28)
-                    .background(CedarStyle.forest.opacity(0.06), in: Circle())
-                    .accessibilityHidden(true)
-                Text("A fresh start")
-                    .font(.system(.title, design: .serif))
-                    .accessibilityIdentifier("library.heading")
-                Text("Your saved conversations will have a home here.")
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(CedarStyle.forest.opacity(0.8))
-            }
-            .padding(32)
-            .padding(.top, 80)
-            .frame(maxWidth: .infinity)
-        }
-        .foregroundStyle(CedarStyle.forest)
-        .background(CedarStyle.cream.ignoresSafeArea())
-        .navigationTitle("Your library")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
 
 #Preview {
+    let store = RecordingStore(root: FileManager.default.temporaryDirectory.appendingPathComponent("CedarPreview"))
     WelcomeView()
+        .environmentObject(store)
+        .environmentObject(AudioController(store: store))
 }

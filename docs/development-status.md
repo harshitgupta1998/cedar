@@ -8,11 +8,18 @@
 - [x] Full simulator build and UI smoke test verified on iPhone 13 / iOS 26.5 (1 test, 0 failures).
 - [x] Physical iPhone 13 signing, installation, and launch verified.
 
-No recording, transcription, persistent storage, or cloud processing is implemented in this checkpoint. No private reference documents are included in the public repository.
+The welcome checkpoint is complete. Cedar 0.2.0 adds local recording, persistent audio and metadata, playback/seek, rename, and recoverable deletion. Transcription and cloud processing are not implemented. No private reference documents are included in the public repository.
 
-## Next checkpoint
+## Local recording checkpoint
 
-After the physical device launches this welcome screen, confirm its iOS version and speech capabilities. Then implement durable local recording, library, and playback before transcription and cloud features. Each stage requires its own device verification.
+- [x] Capture → local save → library → playback.
+- [x] Rename, Recently Deleted, and restore.
+- [x] Storage/recovery unit tests.
+- [x] Short real iPhone locked-screen recording and complete playback confirmed by the user.
+- [x] Full simulator recording UI test, including persistence, playback/seek, rename, and delete/restore.
+- [ ] Full 30-minute, offline, and interruption device matrix.
+
+See [recording checks](recording-checks.md). Complete the longer reliability checks before treating this as durable daily recording, then evaluate speech support and transcription.
 
 ## Verification evidence — November 8, 2026
 
@@ -23,4 +30,5 @@ After the physical device launches this welcome screen, confirm its iOS version 
 - Actual iPhone 13 detected with iOS 26.5.2, paired, Developer Mode enabled.
 - Signed device build, installation, and launch succeeded on the actual iPhone 13 after the user trusted the development profile. The running Cedar process was confirmed on the device.
 - Signing settings are in ignored `ios/Local.xcconfig`; credentials and private reference documents are excluded from the repository.
-- GitHub Actions builds the simulator app on pushes to main and pull requests.
+- Five storage tests passed; both welcome navigation and the full recording UI flow have passing simulator runs.
+- GitHub Actions builds the simulator app and runs storage/recovery tests on pushes to main and pull requests.
