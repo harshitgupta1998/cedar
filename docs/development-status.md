@@ -19,7 +19,7 @@ The welcome checkpoint is complete. Cedar 0.2.0 adds local recording, persistent
 - [x] Full simulator recording UI test, including persistence, playback/seek, rename, and delete/restore.
 - [ ] Full 30-minute, offline, and interruption device matrix.
 
-See [recording checks](recording-checks.md). Complete the longer reliability checks before treating this as durable daily recording, then evaluate speech support and transcription.
+See [recording checks](recording-checks.md). Complete the longer reliability checks before treating this as durable daily recording. Short-clip on-device transcription is verified below.
 
 ## Verification evidence — November 8, 2026
 
@@ -49,7 +49,8 @@ The user confirmed that the offline clip was deliberately short (9.68 seconds), 
 - [x] User confirmed short recognition, offline recognition and persistent manual edits.
 - [x] Fifteen hardware-independent storage/controller tests passed.
 - [x] Six UI regression cases have passing runs, including transcript capability checks and retained playback.
-- [ ] Final GitHub build and hardware-independent tests.
+- [x] Final GitHub simulator build and fifteen hardware-independent tests passed ([run 42748918590](https://github.com/harshitgupta1998/cedar/actions/runs/42748918590)).
+- [x] Version 0.3.0 (build 4) installed and verified on the iPhone 13.
 - [ ] Actual-device long-recording transcription and broader speech evaluation.
 
 See [transcription checks](transcription-checks.md). The user-deferred sustained-capture test remains open and does not block this work. Next, validate longer transcription and consent-controlled AI processing; there is no cloud backend in this build.

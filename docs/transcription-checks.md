@@ -27,7 +27,7 @@ A language-model download is offered explicitly when needed. It downloads Apple'
 
 ## Verified on iPhone 13 — November 9, 2026
 
-Device: iOS 26.5.2. The device's capability report selected `speechAnalyzer` with locale `en_US` and the language model already installed.
+Installed app: version 0.3.0 (build 4), verified through the device application inventory. Device: iOS 26.5.2. The device's capability report selected `speechAnalyzer` with locale `en_US` and the language model already installed.
 
 The user confirmed:
 
@@ -41,7 +41,7 @@ No private transcript text or audio was added to the public repository.
 
 Nine new model/controller tests use deterministic provider results to verify successful persistence, cancellation including late completion, denied permission, no speech, short-fallback duration enforcement, model download without automatic recognition, edit/timestamp preservation, revision archiving, trash/restore, invalid-document rejection, and archive-write failure preservation.
 
-All fifteen hardware-independent storage/controller tests passed. Six UI regression cases have passing runs. The six original storage tests remain in the hardware-independent suite. UI regression checks cover the recorder and library, plus opening Transcript to check capabilities without requesting recognition permission and returning to playable audio. These tests do not establish recognition accuracy; the actual iPhone checks above supply the short-clip speech evidence.
+All fifteen hardware-independent storage/controller tests passed locally and in [GitHub Actions run 42748918590](https://github.com/harshitgupta1998/cedar/actions/runs/42748918590); the remote simulator build also passed. Six UI regression cases have passing runs. The six original storage tests remain in the hardware-independent suite. UI regression checks cover the recorder and library, plus opening Transcript to check capabilities without requesting recognition permission and returning to playable audio. These tests do not establish recognition accuracy; the actual iPhone checks above supply the short-clip speech evidence.
 
 ## Still to validate
 
