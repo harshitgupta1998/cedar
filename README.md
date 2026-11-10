@@ -1,16 +1,16 @@
 # Cedar
 
-A native, local-first iPhone app for thoughts and conversations. Record conversations on your iPhone, save and play them offline, rename them, and restore items from Recently Deleted. Transcription and cloud features are future milestones.
+A native, local-first iPhone app for thoughts and conversations. Record conversations on your iPhone, save and play them offline, rename them, and restore items from Recently Deleted. Create timestamped on-device transcripts and edit their text. Cloud features are future milestones.
 
 ## Run locally
 
-Requirements: a Mac with Xcode 16 or later, an iOS Simulator runtime, or an iPhone running iOS 17 or later. Development verified with Xcode 26.5 and the iOS 26.5 Simulator runtime.
+Requirements: a Mac with Xcode 26 or later for SpeechAnalyzer (Xcode 16 builds use the bounded legacy speech fallback), an iOS Simulator runtime, or an iPhone running iOS 17 or later. Development verified with Xcode 26.5 and the iOS 26.5 Simulator runtime.
 
 1. Open `ios/Cedar.xcodeproj` in Xcode.
 2. Select the **Cedar** scheme and an iPhone simulator.
 3. Press **Run** (Command-R).
 
-No backend, API keys, paid services, or package installations are required. The app makes no network requests. Microphone permission is requested only when you tap Record.
+No backend, API keys, paid services, or package installations are required. Audio and transcripts are processed and stored on the iPhone. Microphone permission is requested only when you tap Record; Speech Recognition permission is requested when you tap Transcribe. An optional Apple language-model download requires internet, but audio is not uploaded.
 
 ## Install on your iPhone 13
 
@@ -44,6 +44,10 @@ xcodebuild -project ios/Cedar.xcodeproj -scheme Cedar \
 ```
 
 The example test command requires an iPhone 13 simulator named **Cedar iPhone 13** to be created in Xcode's Device Hub. Another available iPhone simulator name works too. Select a working audio input in Simulator → I/O → Audio Input for microphone tests. Run only the storage tests with `-only-testing:CedarTests -skip-testing:CedarTests/AudioControllerTests` when no audio input is available. Audio-controller integration tests require microphone permission already granted in the simulator. UI tests use isolated simulator storage and skip physical devices.
+
+## Transcribe a recording
+
+Open a recording → **Transcript**, choose a language, and tap **Transcribe recording**. If offered, use **Download language** first. Tap **Edit transcript** to correct text; timestamps keep pointing to the original audio. See [transcription verification and limits](docs/transcription-checks.md).
 
 ## Current milestone
 

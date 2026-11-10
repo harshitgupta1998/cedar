@@ -3,6 +3,7 @@ import SwiftUI
 struct LibraryView: View {
     @EnvironmentObject private var store: RecordingStore
     @EnvironmentObject private var audio: AudioController
+    @EnvironmentObject private var transcription: TranscriptionController
     @State private var showDeleted = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -158,7 +159,7 @@ struct LibraryView: View {
                     .background(audio.recordingID == nil ? CedarStyle.forest : Color(red: 0.65, green: 0.17, blue: 0.17),
                                 in: RoundedRectangle(cornerRadius: 18))
                 }
-                .disabled(audio.isPreparing)
+                .disabled(audio.isPreparing || transcription.isBusy)
                 .accessibilityIdentifier(audio.recordingID == nil ? "recorder.start" : "recorder.stop")
                 if !reminderScrollsWithLibrary { consentReminder }
             }
@@ -248,6 +249,16 @@ struct RecordingDetailView: View {
                     }
                     .padding(24)
                     .background(.white.opacity(0.7), in: RoundedRectangle(cornerRadius: 24))
+
+                    NavigationLink {
+                        TranscriptView(recordingID: recordingID)
+                    } label: {
+                        Label("Transcript", systemImage: "text.alignleft")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("recording.transcript")
 
                     Text("Only on this iPhone. Nothing is uploaded.")
                         .font(.footnote)

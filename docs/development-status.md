@@ -8,7 +8,7 @@
 - [x] Full simulator build and UI smoke test verified on iPhone 13 / iOS 26.5 (1 test, 0 failures).
 - [x] Physical iPhone 13 signing, installation, and launch verified.
 
-The welcome checkpoint is complete. Cedar 0.2.0 adds local recording, persistent audio and metadata, playback/seek, rename, and recoverable deletion. Transcription and cloud processing are not implemented. No private reference documents are included in the public repository.
+The welcome checkpoint is complete. Cedar 0.2.0 adds local recording, persistent audio and metadata, playback/seek, rename, and recoverable deletion. Cedar 0.3.0 adds on-device transcription, timestamp playback links, editable text, and retained local revisions. Cloud processing is not implemented. No private reference documents are included in the public repository.
 
 ## Local recording checkpoint
 
@@ -37,8 +37,19 @@ See [recording checks](recording-checks.md). Complete the longer reliability che
 
 Cedar 0.2.1 improves the Record-control layout for large text and landscape. Added simulator force-quit recovery and microphone-denial checks, real-audio tests of interruption notification handlers, and a metadata-write failure test. Six storage, three audio-controller, and all five UI tests passed. Largest-text portrait and landscape screenshots were reviewed, and the signed 0.2.1 device build passed.
 
-The user confirmed that the offline clip was deliberately short (9.68 seconds), and that a real Siri interruption stopped recording while retaining playable earlier audio. Version 0.2.1 (build 3) was installed on the iPhone 13 and verified through the device application inventory. The 30-minute locked-screen test, separate call/alarm cases, low-storage device testing, and VoiceOver review remain open. Transcription has not started.
+The user confirmed that the offline clip was deliberately short (9.68 seconds), and that a real Siri interruption stopped recording while retaining playable earlier audio. Version 0.2.1 (build 3) was installed on the iPhone 13 and verified through the device application inventory. The 30-minute locked-screen test, separate call/alarm cases, low-storage device testing, and VoiceOver review remain open. On-device transcription is now implemented; see the 0.3.0 checkpoint below.
 
-## Next step
+## On-device transcription — 0.3.0
 
-The user deferred the 30-minute locked-screen recording check on November 9. Keep it open for later reliability validation. Proceed next with on-device transcription capability checks and a supported fallback on the iPhone 13; the deferred long test does not block that work.
+- [x] Runtime local-engine and language/model checks.
+- [x] Explicit model download and speech permission at first transcription use.
+- [x] Saved-recording transcription, timestamps, playback links, retry/cancel and local revisions.
+- [x] Editable text persists across relaunch; audio remains separate.
+- [x] iPhone 13 selects SpeechAnalyzer with English (United States) ready.
+- [x] User confirmed short recognition, offline recognition and persistent manual edits.
+- [x] Fifteen hardware-independent storage/controller tests passed.
+- [x] Six UI regression cases have passing runs, including transcript capability checks and retained playback.
+- [ ] Final GitHub build and hardware-independent tests.
+- [ ] Actual-device long-recording transcription and broader speech evaluation.
+
+See [transcription checks](transcription-checks.md). The user-deferred sustained-capture test remains open and does not block this work. Next, validate longer transcription and consent-controlled AI processing; there is no cloud backend in this build.

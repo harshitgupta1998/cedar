@@ -11,7 +11,7 @@
 - Playback, pause, seeking, rename, Recently Deleted, and restore.
 - An audio interruption or disconnected audio device stops recording and retains available audio; Cedar does not automatically restart the microphone.
 - Unfinished recording manifests are reconciled on launch. Readable audio is marked Recovered; unreadable audio is retained and marked for recovery. A corrupt manifest raises a library warning without deleting the source folder.
-- No network services, transcription, audio uploads, analytics, or cloud backup are implemented.
+- Cedar 0.3.0 adds [on-device transcription](transcription-checks.md) and an explicit optional language-model download. Audio uploads, cloud processing, analytics and cloud backup are not implemented.
 
 ## Automated checks
 

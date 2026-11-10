@@ -79,4 +79,5 @@ struct WelcomeView: View {
     WelcomeView()
         .environmentObject(store)
         .environmentObject(AudioController(store: store))
+        .environmentObject(TranscriptionController(store: store))
 }

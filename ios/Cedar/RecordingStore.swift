@@ -39,6 +39,7 @@ final class RecordingStore: ObservableObject {
     @Published private(set) var recordings: [Recording] = []
     @Published private(set) var deletedRecordings: [Recording] = []
     @Published private(set) var loadError: String?
+    @Published private(set) var transcriptUpdates = 0
     let root: URL
     private let files = FileManager.default
 
@@ -160,6 +161,37 @@ final class RecordingStore: ObservableObject {
     func restore(_ item: Recording) throws {
         try files.moveItem(at: directory(item.id, deleted: true), to: directory(item.id))
         reload()
+    }
+
+    func loadTranscript(for id: UUID) throws -> Transcript? {
+        let url = directory(id).appendingPathComponent("transcript.json")
+        guard files.fileExists(atPath: url.path) else { return nil }
+        let document = try JSONDecoder().decode(Transcript.self, from: Data(contentsOf: url))
+        try document.validate(for: id)
+        return document
+    }
+
+    @discardableResult
+    func saveTranscript(_ document: Transcript) throws -> Transcript {
+        guard let item = recordings.first(where: { $0.id == document.recordingID }), item.status != .recording else {
+            throw StoreError.notFound
+        }
+        let previous = try loadTranscript(for: document.recordingID)
+        var next = document
+        next.revision = (previous?.revision ?? 0) + 1
+        next.updatedAt = Date()
+        try next.validate(for: item.id)
+        if let previous {
+            let archive = directory(item.id).appendingPathComponent("TranscriptRevisions", isDirectory: true)
+            try files.createDirectory(at: archive, withIntermediateDirectories: true,
+                                      attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
+            try JSONEncoder().encode(previous).write(to: archive.appendingPathComponent("revision-\(previous.revision).json"),
+                                                     options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        }
+        try JSONEncoder().encode(next).write(to: directory(item.id).appendingPathComponent("transcript.json"),
+                                             options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        transcriptUpdates += 1
+        return next
     }
 
     static func readableDuration(at url: URL) -> TimeInterval? {

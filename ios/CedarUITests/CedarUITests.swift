@@ -68,22 +68,26 @@ final class CedarUITests: XCTestCase {
         app.buttons["Rename"].tap()
         let field = app.alerts["Rename recording"].textFields.firstMatch
         XCTAssertTrue(field.waitForExistence(timeout: 3))
+        let originalTitle = field.value as? String ?? ""
         field.tap()
-        field.typeKey("a", modifierFlags: .command)
-        field.typeText("Cedar test conversation")
+        field.typeText(" Cedar test conversation ")
+        let renamedTitle = (field.value as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertTrue(renamedTitle.contains("Cedar test conversation"))
+        XCTAssertNotEqual(renamedTitle, originalTitle)
         app.alerts.buttons["Save"].tap()
-        XCTAssertTrue(app.staticTexts["Cedar test conversation"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["recording.title"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["recording.title"].label, renamedTitle)
         app.buttons["Recording options"].tap()
         app.buttons["Move to Recently Deleted"].tap()
         app.buttons["Move recording"].tap()
         XCTAssertTrue(app.staticTexts["library.heading"].waitForExistence(timeout: 5))
         app.buttons["Recently deleted"].tap()
-        app.buttons["Restore Cedar test conversation"].tap()
+        app.buttons["Restore \(renamedTitle)"].tap()
         app.buttons["Done"].tap()
-        let restored = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Cedar test conversation")).firstMatch
+        let restored = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", renamedTitle)).firstMatch
         XCTAssertTrue(restored.waitForExistence(timeout: 5))
         restored.tap()
-        XCTAssertEqual(app.staticTexts["recording.title"].label, "Cedar test conversation")
+        XCTAssertEqual(app.staticTexts["recording.title"].label, renamedTitle)
     }
 
     @MainActor
@@ -161,6 +165,28 @@ final class CedarUITests: XCTestCase {
         landscape.name = "Library — landscape"
         landscape.lifetime = .keepAlways
         add(landscape)
+    }
+
+
+    @MainActor
+    func testTranscriptCapabilityCheckKeepsAudioAvailable() {
+        openLibrary()
+        startRecordingAndWaitForAudio()
+        app.buttons["recorder.stop"].tap()
+        XCTAssertTrue(app.staticTexts["Saved on this iPhone."].waitForExistence(timeout: 5))
+        let recording = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch
+        XCTAssertTrue(recording.waitForExistence(timeout: 5))
+        recording.tap()
+        app.buttons["recording.transcript"].tap()
+        XCTAssertTrue(app.staticTexts["transcript.capability"].waitForExistence(timeout: 20))
+        // Checking support must not request recognition permission or process audio automatically.
+        XCTAssertFalse(app.alerts.firstMatch.exists)
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.buttons["playback.toggle"].waitForExistence(timeout: 5))
+        app.buttons["playback.toggle"].tap()
+        XCTAssertEqual(app.buttons["playback.toggle"].label, "Pause")
+        app.buttons["playback.toggle"].tap()
+        XCTAssertFalse(app.alerts.firstMatch.exists)
     }
 
 }
