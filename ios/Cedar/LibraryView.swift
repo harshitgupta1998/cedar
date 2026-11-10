@@ -4,6 +4,20 @@ struct LibraryView: View {
     @EnvironmentObject private var store: RecordingStore
     @EnvironmentObject private var audio: AudioController
     @State private var showDeleted = false
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var reminderScrollsWithLibrary: Bool {
+        dynamicTypeSize.isAccessibilitySize || verticalSizeClass == .compact
+    }
+
+    private var consentReminder: some View {
+        Text("Record only with permission from everyone involved.")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+    }
 
     var body: some View {
         List {
@@ -14,6 +28,7 @@ struct LibraryView: View {
                         .accessibilityIdentifier("library.heading")
                     Text("A place to come back to.")
                         .foregroundStyle(.secondary)
+                    if reminderScrollsWithLibrary { consentReminder }
                 }
                 .padding(.vertical, 14)
                 .listRowBackground(Color.clear)
@@ -145,10 +160,7 @@ struct LibraryView: View {
                 }
                 .disabled(audio.isPreparing)
                 .accessibilityIdentifier(audio.recordingID == nil ? "recorder.start" : "recorder.stop")
-                Text("Record only with permission from everyone involved.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+                if !reminderScrollsWithLibrary { consentReminder }
             }
             .padding(.horizontal, 24)
             .padding(.top, 16)

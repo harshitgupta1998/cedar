@@ -22,22 +22,22 @@ final class AudioController: NSObject, ObservableObject {
     private var timer: Timer?
     private var subscriptions = Set<AnyCancellable>()
 
-    init(store: RecordingStore) {
+    init(store: RecordingStore, notifications: NotificationCenter = .default) {
         self.store = store
         super.init()
-        NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)
+        notifications.publisher(for: AVAudioSession.interruptionNotification)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] notification in
                 guard let value = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
                       value == AVAudioSession.InterruptionType.began.rawValue else { return }
                 self?.interrupt(reason: "Recording was interrupted. The audio captured so far has been kept.")
             }.store(in: &subscriptions)
-        NotificationCenter.default.publisher(for: AVAudioSession.mediaServicesWereResetNotification)
+        notifications.publisher(for: AVAudioSession.mediaServicesWereResetNotification)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.interrupt(reason: "The audio service restarted. Cedar kept the recording files; check playback before continuing.")
             }.store(in: &subscriptions)
-        NotificationCenter.default.publisher(for: AVAudioSession.routeChangeNotification)
+        notifications.publisher(for: AVAudioSession.routeChangeNotification)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] notification in
                 guard let value = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,

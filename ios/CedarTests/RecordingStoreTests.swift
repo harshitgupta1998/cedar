@@ -101,4 +101,30 @@ final class RecordingStoreTests: XCTestCase {
         XCTAssertThrowsError(try store.moveToRecentlyDeleted(item))
         XCTAssertEqual(store.recordings, [item])
     }
+
+    @MainActor
+    func testFailedManifestWriteKeepsAudioAndRecoversAfterStorageIsWritable() async throws {
+        let location = root()
+        defer { try? FileManager.default.removeItem(at: location) }
+        let store = RecordingStore(root: location)
+        let item = try store.create()
+        let audio = store.audioURL(for: item.id)
+        try writeAudio(to: audio)
+        let original = try Data(contentsOf: audio)
+        let manifest = audio.deletingLastPathComponent().appendingPathComponent("manifest.json")
+        let backup = manifest.appendingPathExtension("original")
+        try FileManager.default.moveItem(at: manifest, to: backup)
+        // A directory at the metadata destination deterministically makes the atomic write fail.
+        try FileManager.default.createDirectory(at: manifest, withIntermediateDirectories: false)
+        XCTAssertThrowsError(try store.finish(id: item.id, duration: 1, status: .saved))
+        XCTAssertEqual(store.recordings[0].status, .recording)
+        XCTAssertEqual(try Data(contentsOf: audio), original)
+        try FileManager.default.removeItem(at: manifest)
+        try FileManager.default.moveItem(at: backup, to: manifest)
+        let reopened = RecordingStore(root: location)
+        XCTAssertNil(reopened.loadError)
+        XCTAssertEqual(reopened.recordings[0].status, .recovered)
+        XCTAssertEqual(try Data(contentsOf: audio), original)
+    }
+
 }

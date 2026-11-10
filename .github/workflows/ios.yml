@@ -27,5 +27,5 @@ jobs:
         run: >-
           xcodebuild -project ios/Cedar.xcodeproj -scheme Cedar
           -destination "platform=iOS Simulator,id=$CEDAR_SIMULATOR_ID"
-          -only-testing:CedarTests -parallel-testing-enabled NO
+          -only-testing:CedarTests -skip-testing:CedarTests/AudioControllerTests -parallel-testing-enabled NO
           CODE_SIGNING_ALLOWED=NO test

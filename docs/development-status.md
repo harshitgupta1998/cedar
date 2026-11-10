@@ -32,3 +32,9 @@ See [recording checks](recording-checks.md). Complete the longer reliability che
 - Signing settings are in ignored `ios/Local.xcconfig`; credentials and private reference documents are excluded from the repository.
 - Five storage tests passed; both welcome navigation and the full recording UI flow have passing simulator runs.
 - GitHub Actions builds the simulator app and runs storage/recovery tests on pushes to main and pull requests.
+
+## Reliability follow-up — November 9, 2026
+
+Cedar 0.2.1 improves the Record-control layout for large text and landscape. Added simulator force-quit recovery and microphone-denial checks, real-audio tests of interruption notification handlers, and a metadata-write failure test. Six storage, three audio-controller, and all five UI tests passed. Largest-text portrait and landscape screenshots were reviewed, and the signed 0.2.1 device build passed.
+
+Offline capture/playback was user-confirmed; the displayed duration is still needed to verify the extended locked-screen test. A real phone interruption, low-storage device testing, and VoiceOver review remain open. Transcription has not started.
