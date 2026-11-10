@@ -31,7 +31,8 @@ This short smoke test does not establish the full recording reliability gate.
 
 - [ ] A 30-minute locked-screen recording plays end to end.
 - [x] Airplane-mode capture and playback work (user-confirmed November 9; saved duration 9.68 seconds).
-- [ ] Incoming call / Siri / alarm interruptions preserve the earlier audio and show a stopped state.
+- [x] Siri interruption stops recording and preserves playable earlier audio (user-confirmed on iPhone 13, November 9).
+- [ ] Incoming call and alarm interruptions are checked separately.
 - [ ] Relaunch after force-closing during a real microphone recording recovers the available audio.
 - [ ] Microphone denial shows the Settings path without affecting the library.
 - [ ] Low-storage and write-failure behavior on a disposable test device or test volume.
@@ -59,4 +60,6 @@ Recently Deleted is retained indefinitely on this device and can be restored. Pe
 
 Final local checks: all nine controller/storage tests and all five UI tests passed. The largest accessibility text size was also tested in portrait and landscape, with full-screen screenshots reviewed. The signed iOS 0.2.1 build passed.
 
-The user confirmed offline capture and playback on November 9. Read-only inspection of the saved manifest established a 9.68-second clip (displayed as 00:09). Only metadata was copied for this check; the audio stayed on the phone. A 30-minute locked-screen recording and a real-device interruption result remain unverified, so the recording reliability gate stays open.
+The user confirmed offline capture and playback on November 9. Read-only inspection of the saved manifest established a 9.68-second clip (displayed as 00:09). Only metadata was copied for this check; the audio stayed on the phone. The user confirmed that this was intentionally a quick test, rather than capture stopping early. The user also confirmed that invoking Siri stopped a fresh recording and that the earlier sentence remained playable. The 30-minute locked-screen recording remains unverified, so the sustained-capture gate stays open.
+
+Version 0.2.1 (build 3) was installed on the iPhone 13 on November 9 and the installed version was verified.
