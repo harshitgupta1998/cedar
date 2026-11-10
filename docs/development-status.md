@@ -15,7 +15,7 @@ The welcome checkpoint is complete. Cedar 0.2.0 adds local recording, persistent
 - [x] Capture → local save → library → playback.
 - [x] Rename, Recently Deleted, and restore.
 - [x] Storage/recovery unit tests.
-- [x] Short real iPhone locked-screen recording and complete playback confirmed by the user.
+- [x] Short real iPhone capture and audible playback confirmed by the user.
 - [x] Full simulator recording UI test, including persistence, playback/seek, rename, and delete/restore.
 - [ ] Full 30-minute, offline, and interruption device matrix.
 
@@ -37,4 +37,4 @@ See [recording checks](recording-checks.md). Complete the longer reliability che
 
 Cedar 0.2.1 improves the Record-control layout for large text and landscape. Added simulator force-quit recovery and microphone-denial checks, real-audio tests of interruption notification handlers, and a metadata-write failure test. Six storage, three audio-controller, and all five UI tests passed. Largest-text portrait and landscape screenshots were reviewed, and the signed 0.2.1 device build passed.
 
-Offline capture/playback was user-confirmed; the displayed duration is still needed to verify the extended locked-screen test. A real phone interruption, low-storage device testing, and VoiceOver review remain open. Transcription has not started.
+Offline capture/playback was user-confirmed. The saved manifest shows a 9.68-second clip, so the extended locked-screen test remains unverified. A real phone interruption, low-storage device testing, and VoiceOver review remain open. Transcription has not started.

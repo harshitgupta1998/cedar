@@ -47,7 +47,7 @@ The example test command requires an iPhone 13 simulator named **Cedar iPhone 13
 
 ## Current milestone
 
-See [development status](docs/development-status.md). The welcome and short local-recording checkpoints are verified on the actual iPhone 13 (iOS 26.5.2), including a short locked-screen recording and audible playback. Longer recording and interruption checks remain open. See [recording checks and limits](docs/recording-checks.md).
+See [development status](docs/development-status.md). The welcome and short local-recording checkpoints are verified on the actual iPhone 13 (iOS 26.5.2), including short audio capture and audible playback. Longer recording and interruption checks remain open. See [recording checks and limits](docs/recording-checks.md).
 
 ## License
 

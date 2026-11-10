@@ -23,14 +23,14 @@ Initial validation on November 8: all five original storage tests passed. Welcom
 
 ## Physical device evidence
 
-November 8, 2026: Cedar 0.2.0 installed and launched on the iPhone 13 with iOS 26.5.2. The user confirmed a spoken recording, approximately 15 seconds with the phone locked, stop/save, and complete audible playback, including the locked-screen portion.
+November 8, 2026: Cedar 0.2.0 installed and launched on the iPhone 13 with iOS 26.5.2. The user confirmed short spoken capture and audible playback. Metadata inspected November 9 shows that saved clip is 3.10 seconds; this does not establish a sustained locked-screen test.
 
 This short smoke test does not establish the full recording reliability gate.
 
 ## Remaining device checks
 
 - [ ] A 30-minute locked-screen recording plays end to end.
-- [x] Airplane-mode capture and playback work (user-confirmed November 9; saved duration pending).
+- [x] Airplane-mode capture and playback work (user-confirmed November 9; saved duration 9.68 seconds).
 - [ ] Incoming call / Siri / alarm interruptions preserve the earlier audio and show a stopped state.
 - [ ] Relaunch after force-closing during a real microphone recording recovers the available audio.
 - [ ] Microphone denial shows the Settings path without affecting the library.
@@ -59,4 +59,4 @@ Recently Deleted is retained indefinitely on this device and can be restored. Pe
 
 Final local checks: all nine controller/storage tests and all five UI tests passed. The largest accessibility text size was also tested in portrait and landscape, with full-screen screenshots reviewed. The signed iOS 0.2.1 build passed.
 
-The user confirmed offline capture and playback on November 9. The displayed recording duration and a real-device interruption result are still pending, so the 30-minute reliability gate remains open.
+The user confirmed offline capture and playback on November 9. Read-only inspection of the saved manifest established a 9.68-second clip (displayed as 00:09). Only metadata was copied for this check; the audio stayed on the phone. A 30-minute locked-screen recording and a real-device interruption result remain unverified, so the recording reliability gate stays open.
