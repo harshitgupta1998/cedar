@@ -29,7 +29,7 @@ This short smoke test does not establish the full recording reliability gate.
 
 ## Remaining device checks
 
-- [ ] A 30-minute locked-screen recording plays end to end.
+- [ ] Deferred: a 30-minute locked-screen recording plays end to end (user deferred November 9).
 - [x] Airplane-mode capture and playback work (user-confirmed November 9; saved duration 9.68 seconds).
 - [x] Siri interruption stops recording and preserves playable earlier audio (user-confirmed on iPhone 13, November 9).
 - [ ] Incoming call and alarm interruptions are checked separately.
@@ -63,3 +63,7 @@ Final local checks: all nine controller/storage tests and all five UI tests pass
 The user confirmed offline capture and playback on November 9. Read-only inspection of the saved manifest established a 9.68-second clip (displayed as 00:09). Only metadata was copied for this check; the audio stayed on the phone. The user confirmed that this was intentionally a quick test, rather than capture stopping early. The user also confirmed that invoking Siri stopped a fresh recording and that the earlier sentence remained playable. The 30-minute locked-screen recording remains unverified, so the sustained-capture gate stays open.
 
 Version 0.2.1 (build 3) was installed on the iPhone 13 on November 9 and the installed version was verified.
+
+## Deferred sustained-capture check
+
+On November 9, the user chose to keep the 30-minute locked-screen test for later. This test remains unverified. Its completion is deferred while transcription capability work proceeds; it must be revisited before claiming sustained recording reliability.

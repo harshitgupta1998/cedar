@@ -38,3 +38,7 @@ See [recording checks](recording-checks.md). Complete the longer reliability che
 Cedar 0.2.1 improves the Record-control layout for large text and landscape. Added simulator force-quit recovery and microphone-denial checks, real-audio tests of interruption notification handlers, and a metadata-write failure test. Six storage, three audio-controller, and all five UI tests passed. Largest-text portrait and landscape screenshots were reviewed, and the signed 0.2.1 device build passed.
 
 The user confirmed that the offline clip was deliberately short (9.68 seconds), and that a real Siri interruption stopped recording while retaining playable earlier audio. Version 0.2.1 (build 3) was installed on the iPhone 13 and verified through the device application inventory. The 30-minute locked-screen test, separate call/alarm cases, low-storage device testing, and VoiceOver review remain open. Transcription has not started.
+
+## Next step
+
+The user deferred the 30-minute locked-screen recording check on November 9. Keep it open for later reliability validation. Proceed next with on-device transcription capability checks and a supported fallback on the iPhone 13; the deferred long test does not block that work.
