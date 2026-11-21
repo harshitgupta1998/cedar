@@ -68,3 +68,9 @@ The initial bullet-point prompt invented tasks in a synthetic test. The revised 
 Simulator checks verified model download, cancellation/retry, actual generation, saved output, and cancellation of regeneration while retaining previous notes. All 19 hardware-independent tests passed locally, including real-model inference on short and longer synthetic text plus oversized-input rejection. The four new notes tests were rerun after the prompt revision. Two UI regression tests passed for welcome navigation and transcript capability checks with retained audio. [GitHub Actions run 44958665011](https://github.com/harshitgupta1998/cedar/actions/runs/44958665011) passed its simulator build and tests, with 18 tests passing and the optional real-model case skipped because CI does not download the model.
 
 The iPhone 13 now reports iOS 27.2.1. The first 0.4.0 package installed and the verified model was copied to its app container. The user subsequently confirmed that Cedar generated offline notes successfully on the iPhone. Automated device inference remains unverified because of the XCTest signing failure.
+
+## App icon — 0.4.1, November 21, 2026
+
+Added a forest-green icon with a cream leaf and sound-wave detail, generated with ImageGen. The new CedarIcon asset is opaque and 1024 × 1024. Both app configurations select it, and the compiled app's primary icon metadata references CedarIcon. The original black placeholder asset is retained. Version 0.4.1 uses build 6.
+
+[GitHub Actions run 44960935722](https://github.com/harshitgupta1998/cedar/actions/runs/44960935722) passed the simulator build and existing test suite. The device app compiled, but signing failed with errSecInternalComponent before installation. Installation of the icon update is still pending signing-key access. Work continued from a fresh checkout at ~/Projects/cedar because macOS denied access to the earlier Documents checkout.
