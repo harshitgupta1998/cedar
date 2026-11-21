@@ -80,4 +80,5 @@ struct WelcomeView: View {
         .environmentObject(store)
         .environmentObject(AudioController(store: store))
         .environmentObject(TranscriptionController(store: store))
+        .environmentObject(NotesController())
 }

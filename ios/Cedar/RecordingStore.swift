@@ -40,6 +40,7 @@ final class RecordingStore: ObservableObject {
     @Published private(set) var deletedRecordings: [Recording] = []
     @Published private(set) var loadError: String?
     @Published private(set) var transcriptUpdates = 0
+    @Published private(set) var notesUpdates = 0
     let root: URL
     private let files = FileManager.default
 
@@ -192,6 +193,34 @@ final class RecordingStore: ObservableObject {
                                              options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
         transcriptUpdates += 1
         return next
+    }
+
+    func loadNotes(for id: UUID) throws -> LocalNotes? {
+        let url = directory(id).appendingPathComponent("notes.json")
+        guard files.fileExists(atPath: url.path) else { return nil }
+        let notes = try JSONDecoder().decode(LocalNotes.self, from: Data(contentsOf: url))
+        try notes.validate(for: id)
+        return notes
+    }
+
+    func saveNotes(_ notes: LocalNotes) throws {
+        guard let item = recordings.first(where: { $0.id == notes.recordingID }), item.status != .recording else {
+            throw StoreError.notFound
+        }
+        try notes.validate(for: item.id)
+        guard let transcript = try loadTranscript(for: item.id), notes.matches(transcript) else {
+            throw NotesError.transcriptChanged
+        }
+        if let previous = try loadNotes(for: item.id) {
+            let archive = directory(item.id).appendingPathComponent("NotesRevisions", isDirectory: true)
+            try files.createDirectory(at: archive, withIntermediateDirectories: true,
+                                      attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
+            try JSONEncoder().encode(previous).write(to: archive.appendingPathComponent("\(UUID().uuidString).json"),
+                                                     options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        }
+        try JSONEncoder().encode(notes).write(to: directory(item.id).appendingPathComponent("notes.json"),
+                                              options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        notesUpdates += 1
     }
 
     static func readableDuration(at url: URL) -> TimeInterval? {

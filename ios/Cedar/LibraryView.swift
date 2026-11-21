@@ -4,6 +4,7 @@ struct LibraryView: View {
     @EnvironmentObject private var store: RecordingStore
     @EnvironmentObject private var audio: AudioController
     @EnvironmentObject private var transcription: TranscriptionController
+    @EnvironmentObject private var notes: NotesController
     @State private var showDeleted = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -159,7 +160,7 @@ struct LibraryView: View {
                     .background(audio.recordingID == nil ? CedarStyle.forest : Color(red: 0.65, green: 0.17, blue: 0.17),
                                 in: RoundedRectangle(cornerRadius: 18))
                 }
-                .disabled(audio.isPreparing || transcription.isBusy)
+                .disabled(audio.isPreparing || transcription.isBusy || notes.isBusy)
                 .accessibilityIdentifier(audio.recordingID == nil ? "recorder.start" : "recorder.stop")
                 if !reminderScrollsWithLibrary { consentReminder }
             }

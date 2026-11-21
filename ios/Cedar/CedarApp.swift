@@ -5,6 +5,7 @@ struct CedarApp: App {
     @StateObject private var store: RecordingStore
     @StateObject private var audio: AudioController
     @StateObject private var transcription: TranscriptionController
+    @StateObject private var notes = NotesController()
 
     init() {
         let store = RecordingStore()
@@ -19,6 +20,7 @@ struct CedarApp: App {
                 .environmentObject(store)
                 .environmentObject(audio)
                 .environmentObject(transcription)
+                .environmentObject(notes)
         }
     }
 }

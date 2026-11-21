@@ -54,3 +54,15 @@ The user confirmed that the offline clip was deliberately short (9.68 seconds), 
 - [ ] Actual-device long-recording transcription and broader speech evaluation.
 
 See [transcription checks](transcription-checks.md). The user-deferred sustained-capture test remains open and does not block this work. Next, validate longer transcription and consent-controlled AI processing; there is no cloud backend in this build.
+
+## Offline notes experiment — 0.4.0, November 21, 2026
+
+SmolLM2 360M Instruct Q4_K_M is integrated through pinned llama.cpp b9000. The 270,590,560-byte model is downloaded explicitly from a pinned Unsloth revision on Hugging Face and verified by SHA-256 before installation and inference. Model weights and runtime binaries are excluded from Git. The developer setup script downloads and verifies the runtime. The app includes Apache 2.0 and MIT notices.
+
+Open a saved transcript → Offline notes. The model generates a short English summary that is stored locally with the source transcript fingerprint, revision, model ID and elapsed processing time. Previous notes are archived on regeneration. Stale notes are labeled after transcript edits. Cancelled or failed work preserves saved notes. The engine unloads its model and context after each request.
+
+Initial limits are 3,500 input tokens including instructions, a 4,096-token context and at most 384 output tokens. Around five minutes of speech is starting guidance. Longer input produces a clear error. Keeping the app open is required for this experiment. Long-conversation quality, battery use, thermal behavior and peak device memory remain to be measured.
+
+The initial bullet-point prompt invented tasks in a synthetic test. The revised summary prompt preserved the tested rejected proposal and assigned dates, but this is a limited evaluation. The feature is explicitly experimental and summaries should be reviewed.
+
+Simulator checks verified model download, cancellation/retry, actual generation, saved output, and cancellation of regeneration while retaining previous notes. Hardware-independent unit/controller/storage tests passed before the final UI regression run. Final CI and physical-device inference results are pending.

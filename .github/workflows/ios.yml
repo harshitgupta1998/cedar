@@ -10,6 +10,8 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+      - name: Prepare local inference runtime
+        run: python3 scripts/setup-inference.py
       - name: Build for iOS Simulator
         run: >-
           xcodebuild -project ios/Cedar.xcodeproj -scheme Cedar

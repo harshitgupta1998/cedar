@@ -5,6 +5,7 @@ struct TranscriptView: View {
     @EnvironmentObject private var store: RecordingStore
     @EnvironmentObject private var controller: TranscriptionController
     @EnvironmentObject private var audio: AudioController
+    @EnvironmentObject private var notes: NotesController
     @AppStorage("transcription.locale") private var localeID = Locale.preferredLanguages.first ?? "en-US"
     @State private var transcript: Transcript?
     @State private var loadError: String?
@@ -50,7 +51,7 @@ struct TranscriptView: View {
                         Button(transcript == nil ? "Transcribe recording" : "Transcribe again") {
                             if transcript == nil { begin() } else { showReplace = true }
                         }
-                        .disabled(controller.isBusy || audio.recordingID != nil)
+                        .disabled(controller.isBusy || notes.isBusy || audio.recordingID != nil)
                         .accessibilityIdentifier("transcript.start")
                     }
                 }
@@ -94,6 +95,13 @@ struct TranscriptView: View {
                     Button("Edit transcript") { showEditor = true }
                         .disabled(controller.isBusy)
                         .accessibilityIdentifier("transcript.edit")
+                }
+                Section {
+                    NavigationLink { NotesView(recordingID: recordingID) } label: {
+                        Label("Offline notes", systemImage: "sparkles")
+                    }
+                    .disabled(controller.isBusy)
+                    .accessibilityIdentifier("transcript.notes")
                 }
                 Section("Tap a timestamp to listen") {
                     ForEach(transcript.segments) { segment in

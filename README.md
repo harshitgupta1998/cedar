@@ -1,16 +1,17 @@
 # Cedar
 
-A native, local-first iPhone app for thoughts and conversations. Record conversations on your iPhone, save and play them offline, rename them, and restore items from Recently Deleted. Create timestamped on-device transcripts and edit their text. Cloud features are future milestones.
+A native, local-first iPhone app for thoughts and conversations. Record conversations on your iPhone, save and play them offline, rename them, and restore items from Recently Deleted. Create timestamped on-device transcripts, edit their text, and try experimental offline summaries with SmolLM2 360M. Cloud features are future milestones.
 
 ## Run locally
 
 Requirements: a Mac with Xcode 26 or later for SpeechAnalyzer (Xcode 16 builds use the bounded legacy speech fallback), an iOS Simulator runtime, or an iPhone running iOS 17 or later. Development verified with Xcode 26.5 and the iOS 26.5 Simulator runtime.
 
-1. Open `ios/Cedar.xcodeproj` in Xcode.
-2. Select the **Cedar** scheme and an iPhone simulator.
-3. Press **Run** (Command-R).
+1. Run `python3 scripts/setup-inference.py` from the repository root. This downloads and verifies the pinned llama.cpp XCFramework.
+2. Open `ios/Cedar.xcodeproj` in Xcode.
+3. Select the **Cedar** scheme and an iPhone simulator.
+4. Press **Run** (Command-R).
 
-No backend, API keys, paid services, or package installations are required. Audio and transcripts are processed and stored on the iPhone. Microphone permission is requested only when you tap Record; Speech Recognition permission is requested when you tap Transcribe. An optional Apple language-model download requires internet, but audio is not uploaded.
+No backend, API keys, or paid services are required. The inference runtime is downloaded during developer setup. Audio and transcripts are processed and stored on the iPhone. Microphone permission is requested only when you tap Record; Speech Recognition permission is requested when you tap Transcribe. An optional Apple language-model download requires internet, but audio is not uploaded.
 
 ## Install on your iPhone 13
 
@@ -49,10 +50,22 @@ The example test command requires an iPhone 13 simulator named **Cedar iPhone 13
 
 Open a recording → **Transcript**, choose a language, and tap **Transcribe recording**. If offered, use **Download language** first. Tap **Edit transcript** to correct text; timestamps keep pointing to the original audio. See [transcription verification and limits](docs/transcription-checks.md).
 
+## Try offline notes
+
+Open a saved transcript → **Offline notes** → **Download model · 271 MB** → **Generate notes**. The download comes from Hugging Face and is verified against a pinned SHA-256 hash. After download, inference runs locally through llama.cpp and works offline. The model can be removed from this screen. Its download is excluded from iCloud backups.
+
+This experiment uses **SmolLM2-360M-Instruct Q4_K_M**. Start with short English recordings around five minutes or less. The full prompt must fit within 3,500 tokens, with a 4,096-token context and up to 384 generated tokens. Longer input is rejected with a message. Duration is guidance rather than an enforced recording limit. Keep Cedar open during generation. Leaving the screen or backgrounding the app cancels generation. The model is unloaded after each request.
+
+Generated notes are saved alongside the recording and survive relaunch and Recently Deleted/restore. Regeneration archives the previous notes. Editing a transcript marks its existing notes as outdated. Cancellation and failed generation preserve saved notes. Review the summary against the transcript, especially decisions, names, dates and tasks. The model is experimental and may omit or invent details.
+
+The model weights are downloaded separately and excluded from Git. Model and runtime licenses are available in the app. Source: [Hugging Face SmolLM2](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct), [Unsloth conversion](https://huggingface.co/unsloth/SmolLM2-360M-Instruct-GGUF), [llama.cpp b9000](https://github.com/ggml-org/llama.cpp/tree/b9000).
+
+The optional real-inference integration test runs when the pinned model is installed in the test host app's `Library/Application Support/CedarModels/SmolLM2-360M-Q4_K_M.gguf`. It uses synthetic transcripts. CI skips that case when the model is absent and runs the remaining storage, integrity and speech-controller tests.
+
 ## Current milestone
 
 See [development status](docs/development-status.md). The welcome and short local-recording checkpoints are verified on the actual iPhone 13 (iOS 26.5.2), including short audio capture and audible playback. Longer recording and interruption checks remain open. See [recording checks and limits](docs/recording-checks.md).
 
 ## License
 
-[MIT](LICENSE).
+Cedar is [MIT](LICENSE). SmolLM2 model weights are Apache 2.0 and the llama.cpp runtime is MIT. Bundled notices are in `ios/Cedar/Notices`.

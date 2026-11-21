@@ -14,3 +14,7 @@ Local.xcconfig
 # Credentials and provisioning
 *.p12
 *.mobileprovision
+
+# Downloaded local inference runtime
+ios/Vendor/
+*.gguf
