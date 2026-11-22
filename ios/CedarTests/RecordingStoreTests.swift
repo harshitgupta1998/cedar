@@ -217,3 +217,76 @@ final class RecordingStoreTests: XCTestCase {
     }
 
 }
+
+extension RecordingStoreTests {
+    @MainActor
+    func testBookmarksPersistThroughCaptureRecoveryRenameTrashAndRestoreWithoutChangingAudio() throws {
+        let location = root()
+        defer { try? FileManager.default.removeItem(at: location) }
+        let store = RecordingStore(root: location)
+        let recording = try store.create()
+        try writeAudio(to: store.audioURL(for: recording.id))
+        let originalAudio = try Data(contentsOf: store.audioURL(for: recording.id))
+        let first = try store.addBookmark(recordingID: recording.id, seconds: 0.234, title: "Decision")
+        XCTAssertEqual(first.positionMS, 234)
+        XCTAssertEqual(store.recordings[0].status, .recording)
+        try store.finish(id: recording.id, duration: 1, status: .saved)
+        _ = try store.addBookmark(recordingID: recording.id, seconds: 0.1, title: "Earlier")
+        XCTAssertEqual(try store.loadBookmarks(for: recording.id).items.map(\.positionMS), [100, 234])
+        let reopened = RecordingStore(root: location)
+        XCTAssertEqual(try reopened.loadBookmarks(for: recording.id).items[1], first)
+        try reopened.renameBookmark(first, recordingID: recording.id, title: "Final decision")
+        XCTAssertThrowsError(try reopened.renameBookmark(first, recordingID: recording.id, title: "Stale label"))
+        XCTAssertThrowsError(try reopened.removeBookmark(first, recordingID: recording.id))
+        try reopened.moveToRecentlyDeleted(reopened.recordings[0])
+        XCTAssertThrowsError(try reopened.loadBookmarks(for: recording.id))
+        try reopened.restore(reopened.deletedRecordings[0])
+        let recovered = try reopened.loadBookmarks(for: recording.id).items[1]
+        XCTAssertEqual(recovered.title, "Final decision")
+        XCTAssertEqual(recovered.positionMS, first.positionMS)
+        try reopened.removeBookmark(recovered, recordingID: recording.id)
+        XCTAssertEqual(try reopened.loadBookmarks(for: recording.id).items.count, 1)
+        XCTAssertEqual(try Data(contentsOf: reopened.audioURL(for: recording.id)), originalAudio)
+    }
+
+    @MainActor
+    func testBookmarkValidationAndCorruptFilesCannotOverwriteExistingData() throws {
+        let location = root()
+        defer { try? FileManager.default.removeItem(at: location) }
+        let store = RecordingStore(root: location)
+        let recording = try store.create()
+        try writeAudio(to: store.audioURL(for: recording.id))
+        try store.finish(id: recording.id, duration: 1, status: .saved)
+        for time in [-1.0, .infinity, .nan, 1e30, 2] {
+            XCTAssertThrowsError(try store.addBookmark(recordingID: recording.id, seconds: time))
+        }
+        let bookmark = try store.addBookmark(recordingID: recording.id, seconds: 0.5)
+        let file = location.appendingPathComponent(recording.id.uuidString).appendingPathComponent("bookmarks.json")
+        let before = try Data(contentsOf: file)
+        XCTAssertThrowsError(try store.renameBookmark(bookmark, recordingID: recording.id, title: " \n"))
+        XCTAssertThrowsError(try store.renameBookmark(bookmark, recordingID: recording.id, title: String(repeating: "x", count: 201)))
+        XCTAssertEqual(try Data(contentsOf: file), before)
+        let corrupt = Data("damaged bookmarks".utf8)
+        try corrupt.write(to: file)
+        XCTAssertThrowsError(try store.addBookmark(recordingID: recording.id, seconds: 0.7))
+        XCTAssertEqual(try Data(contentsOf: file), corrupt)
+        let future = RecordingBookmarks(formatVersion: 99, recordingID: recording.id, items: [])
+        let futureBytes = try JSONEncoder().encode(future)
+        try futureBytes.write(to: file)
+        XCTAssertThrowsError(try store.addBookmark(recordingID: recording.id, seconds: 0.7))
+        XCTAssertEqual(try Data(contentsOf: file), futureBytes)
+    }
+
+    @MainActor
+    func testBookmarksRemainWithAnUnfinishedRecordingAfterColdRecovery() throws {
+        let location = root()
+        defer { try? FileManager.default.removeItem(at: location) }
+        let store = RecordingStore(root: location)
+        let recording = try store.create()
+        try writeAudio(to: store.audioURL(for: recording.id))
+        let mark = try store.addBookmark(recordingID: recording.id, seconds: 0.7)
+        let reopened = RecordingStore(root: location)
+        XCTAssertEqual(reopened.recordings[0].status, .recovered)
+        XCTAssertEqual(try reopened.loadBookmarks(for: recording.id).items, [mark])
+    }
+}

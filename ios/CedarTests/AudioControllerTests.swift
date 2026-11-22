@@ -70,3 +70,64 @@ final class AudioControllerTests: XCTestCase {
         try await verifyRecordingStops(for: AVAudioSession.mediaServicesWereResetNotification, userInfo: nil)
     }
 }
+
+extension AudioControllerTests {
+    @MainActor
+    func testLiveBookmarksUseRecorderClockAndFailureDoesNotStopCapture() async throws {
+        try requireSimulatorMicrophone()
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("CedarBookmarkCapture-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = RecordingStore(root: root)
+        let controller = AudioController(store: store)
+        defer { controller.stopRecording(); controller.stopPlayback() }
+        await controller.startRecording()
+        let id = try XCTUnwrap(controller.recordingID)
+        try await Task.sleep(for: .seconds(1))
+        controller.bookmarkRecordingMoment()
+        let mark = try XCTUnwrap(store.loadBookmarks(for: id).items.first)
+        XCTAssertGreaterThan(mark.positionMS, 500)
+        XCTAssertEqual(controller.recordingID, id)
+        XCTAssertEqual(store.recordings[0].status, .recording)
+        let elapsed = controller.elapsed
+        let file = root.appendingPathComponent(id.uuidString).appendingPathComponent("bookmarks.json")
+        let damaged = Data("bad file".utf8)
+        try damaged.write(to: file)
+        controller.bookmarkRecordingMoment()
+        XCTAssertNotNil(controller.errorMessage)
+        XCTAssertEqual(controller.recordingID, id)
+        try await Task.sleep(for: .seconds(1))
+        XCTAssertGreaterThan(controller.elapsed, elapsed)
+        XCTAssertEqual(try Data(contentsOf: file), damaged)
+        controller.stopRecording()
+        XCTAssertEqual(store.recordings[0].status, .saved)
+        XCTAssertGreaterThan(store.recordings[0].duration, 1.5)
+        XCTAssertNotNil(RecordingStore.readableDuration(at: store.audioURL(for: id)))
+    }
+
+    @MainActor
+    func testPausedPlaybackBookmarksUseActualPlayerPosition() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("CedarBookmarkPlayback-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = RecordingStore(root: root)
+        let item = try store.create()
+        do {
+            let format = AVAudioFormat(standardFormatWithSampleRate: 16_000, channels: 1)!
+            let file = try AVAudioFile(forWriting: store.audioURL(for: item.id), settings: format.settings)
+            let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 32_000)!
+            buffer.frameLength = 32_000
+            buffer.floatChannelData![0].initialize(repeating: 0, count: 32_000)
+            try file.write(from: buffer)
+        }
+        try store.finish(id: item.id, duration: 2, status: .saved)
+        let controller = AudioController(store: store)
+        defer { controller.stopPlayback() }
+        XCTAssertThrowsError(try controller.bookmarkPlaybackPosition())
+        controller.togglePlayback(store.recordings[0])
+        controller.pausePlayback()
+        controller.seek(to: 0.75)
+        let bookmark = try controller.bookmarkPlaybackPosition()
+        XCTAssertEqual(bookmark.positionMS, 750, accuracy: 2)
+        XCTAssertFalse(controller.isPlaying)
+        XCTAssertEqual(try store.loadBookmarks(for: item.id).items, [bookmark])
+    }
+}

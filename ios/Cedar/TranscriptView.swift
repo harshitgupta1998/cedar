@@ -18,6 +18,7 @@ struct TranscriptView: View {
     @State private var isFinding = false
     @State private var jumpRequest = 0
     @State private var showTranscriptionOptions = false
+    @State private var bookmarkFeedback: String?
     @FocusState private var findFocused: Bool
 
     private var findRequest: TranscriptFindRequest {
@@ -114,6 +115,15 @@ struct TranscriptView: View {
                             audio.togglePlayback(item)
                         } label: { Label(audio.isPlaying ? "Pause" : "Play", systemImage: audio.isPlaying ? "pause.fill" : "play.fill") }
                             .accessibilityIdentifier("transcript.playback")
+                        Button {
+                            do {
+                                let marker = try audio.bookmarkPlaybackPosition()
+                                bookmarkFeedback = "Bookmarked \(audioTime(marker.seconds))."
+                            } catch { audio.errorMessage = error.localizedDescription }
+                        } label: { Image(systemName: bookmarkFeedback == nil ? "bookmark" : "bookmark.fill") }
+                            .accessibilityLabel("Bookmark playback position")
+                            .accessibilityValue(bookmarkFeedback ?? "")
+                            .accessibilityIdentifier("transcript.bookmark")
                         Spacer()
                         Text("\(audioTime(audio.playbackTime)) / \(audioTime(audio.playbackDuration))")
                             .font(.caption).monospacedDigit()

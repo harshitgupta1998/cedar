@@ -80,11 +80,19 @@ Optional real-inference tests require the pinned weight file in the test host's 
 
 These additions were merged in [PR #1](https://github.com/harshitgupta1998/cedar/pull/1). They do not change the AI model or summary generation pipeline. Physical-device interaction checks for the new library tools remain open.
 
-## Find within a transcript · 0.9.0 feature branch
+## Find within a transcript · 0.9.0
 
 Open a recording → **Transcript** and use **Find in transcript**. Matching is case/accent insensitive and counts matching segments, with repeated words in one segment counted once. Matching text is emphasized. Previous/next controls wrap through segments and jump to the selected row. **Play match** starts audio at that segment's timestamp; the bottom playback bar offers pause/resume. **Start** returns to the beginning. Empty results disable match controls. Search highlights are cached, searches are cancellable/off the main thread, and edits invalidate results by transcript revision.
 
-This is phrase matching within individual segments; a phrase split across segments is not a find result. It does not change or upload the transcript, and it does not automatically play audio as you type. The source-excerpt feature above separately supports quotations spanning multiple segments. These additions are on `codex/transcript-navigation`.
+This is phrase matching within individual segments; a phrase split across segments is not a find result. It does not change or upload the transcript, and it does not automatically play audio as you type. The source-excerpt feature above separately supports quotations spanning multiple segments. These additions were merged in [PR #2](https://github.com/harshitgupta1998/cedar/pull/2).
+
+## Recording bookmarks · 0.10.0 feature branch
+
+Tap **Bookmark this moment** during capture. Capture continues and the marker uses the recorder's clock rather than a UI timer. While listening, use **Bookmark position** on recording details, the bookmark icon in the transcript player, or **Bookmark source position** in notes. Playback can be paused before marking a moment. Each tap creates a marker; offsets are stored in milliseconds and displayed as minutes/seconds.
+
+Open recording details → **Bookmarks** to listen from a marker, rename its label, or swipe to remove it. Removing a bookmark does not remove audio. Bookmarks are sorted by audio offset, persist after relaunch, and move with recordings through Recently Deleted/restore. They do not depend on transcripts or generated notes. Markers beyond audio recovered from an interruption remain visible but cannot play until their position is available.
+
+Bookmarks use a separate, atomically written local file with the same file protection as other recording metadata. Invalid/future-format files are kept rather than reset. Failed saves report an error without stopping capture. Labels support 1–200 characters, with up to 1,000 markers per recording. These additions are on `codex/recording-bookmarks`; hands-on iPhone checks remain open.
 
 ## Recovery
 
