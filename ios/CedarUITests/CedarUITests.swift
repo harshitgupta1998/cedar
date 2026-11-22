@@ -285,6 +285,10 @@ final class CedarUITests: XCTestCase {
         let pause = app.buttons["notes.pauseSource"]
         XCTAssertTrue(pause.waitForExistence(timeout: 3))
         pause.tap()
+        let sourceBookmark = app.buttons["notes.bookmarkSource"]
+        for _ in 0..<3 where !sourceBookmark.isHittable { app.swipeUp() }
+        XCTAssertTrue(sourceBookmark.isHittable)
+        sourceBookmark.tap()
         let add = app.buttons["notes.addAction"].firstMatch
         for _ in 0..<5 where !add.isHittable { app.swipeUp() }
         XCTAssertTrue(add.isHittable)
@@ -390,6 +394,83 @@ final class CedarUITests: XCTestCase {
         landscape.name = "Library largest accessibility text — landscape"
         landscape.lifetime = .keepAlways
         add(landscape)
+    }
+
+    @MainActor
+    func testLiveBookmarkSurvivesRelaunchRenameAndRemoval() {
+        openLibrary()
+        startRecordingAndWaitForAudio()
+        let mark = app.buttons["recorder.bookmark"]
+        for _ in 0..<3 where !mark.isHittable { app.swipeUp() }
+        XCTAssertTrue(mark.isHittable)
+        mark.tap()
+        XCTAssertTrue(app.buttons["recorder.stop"].exists)
+        app.buttons["recorder.stop"].tap()
+        XCTAssertTrue(app.staticTexts["Saved on this iPhone."].waitForExistence(timeout: 5))
+        app.terminate()
+        openLibrary()
+        let recording = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch
+        recording.tap()
+        app.buttons["recording.bookmarks"].tap()
+        let rename = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "bookmark.rename.")).firstMatch
+        XCTAssertTrue(rename.waitForExistence(timeout: 5))
+        rename.tap()
+        let field = app.descendants(matching: .any).matching(identifier: "bookmark.label").firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText(" decision ")
+        app.buttons["bookmark.saveLabel"].tap()
+        let label = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "decision")).firstMatch
+        XCTAssertTrue(label.waitForExistence(timeout: 5))
+        app.terminate()
+        openLibrary()
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch.tap()
+        app.buttons["recording.bookmarks"].tap()
+        XCTAssertTrue(label.waitForExistence(timeout: 5))
+        label.swipeLeft()
+        app.buttons["Remove bookmark"].tap()
+        XCTAssertTrue(app.staticTexts["No bookmarks yet."].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.buttons["playback.toggle"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testPlaybackBookmarksCapturePausedPositionAndJumpBack() {
+        app.launchArguments += ["--library-features-fixture", "--transcript-navigation-fixture"]
+        openLibrary()
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch.tap()
+        app.buttons["recording.transcript"].tap()
+        let find = app.textFields["transcript.find"]
+        XCTAssertTrue(find.waitForExistence(timeout: 10))
+        find.tap()
+        find.typeText("Cedar")
+        let status = app.staticTexts["transcript.findStatus"]
+        expectation(for: NSPredicate(format: "label CONTAINS %@", "2 matching segments"), evaluatedWith: status)
+        waitForExpectations(timeout: 5)
+        app.buttons["transcript.nextMatch"].tap()
+        app.buttons["transcript.playMatch"].tap()
+        let player = app.buttons["transcript.playback"]
+        XCTAssertTrue(player.waitForExistence(timeout: 5))
+        player.tap()
+        app.buttons["transcript.bookmark"].tap()
+        let confirmation = app.buttons["transcript.bookmark"].value as? String ?? ""
+        XCTAssertTrue(confirmation.contains("Bookmarked"))
+        let time = confirmation.components(separatedBy: " ").last?.trimmingCharacters(in: CharacterSet(charactersIn: ".")) ?? "missing"
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.buttons["recording.bookmarks"].tap()
+        let play = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "bookmark.play.")).firstMatch
+        XCTAssertTrue(play.waitForExistence(timeout: 5))
+        XCTAssertTrue(play.label.contains(time))
+        play.tap()
+        XCTAssertTrue(app.buttons["bookmarks.playback"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.buttons["bookmarks.playback"].label, "Pause audio")
+        app.buttons["bookmarks.playback"].tap()
+        app.buttons["bookmarks.addPosition"].tap()
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "bookmark.play.")).count, 2)
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "Bookmarks at paused playback position"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 
 }

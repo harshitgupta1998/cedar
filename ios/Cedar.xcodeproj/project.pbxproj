@@ -39,6 +39,7 @@
 		F0FD3221E3C4054B6772E19A /* Qwen.txt in Resources */ = {isa = PBXBuildFile; fileRef = 11A1CD9B678FF4DCED5C7E60 /* Qwen.txt */; };
 		F6EF9E7927F374FD469BCF8F /* NotesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60B1D0377D5F22819AC0414 /* NotesModel.swift */; };
 		CFFEB018264F4D9E8AB22523 /* LibraryFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935807E94B1B475788F2B066 /* LibraryFeatures.swift */; };
+		30F85528B2A341B3AEBE9E97 /* RecordingBookmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C84E1A4E09634D02AEE639F9 /* RecordingBookmarks.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,7 @@
 		F5F57CDA7F77BBB70AA3B50C /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		F60B1D0377D5F22819AC0414 /* NotesModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotesModel.swift; sourceTree = "<group>"; };
 		935807E94B1B475788F2B066 /* LibraryFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFeatures.swift; sourceTree = "<group>"; };
+		C84E1A4E09634D02AEE639F9 /* RecordingBookmarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingBookmarks.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +184,7 @@
 				8ED16B67665D0387EB456271 /* CedarApp.swift */,
 				ECE28C590DB975C293C86B3F /* WelcomeView.swift */,
 				0A3A30D7F21B14201A042863 /* Assets.xcassets */,
+				C84E1A4E09634D02AEE639F9 /* RecordingBookmarks.swift */,
 				CEF6B96BBAA032BB0116677B /* RecordingStore.swift */,
 				34F31E0C120092112C453C01 /* AudioController.swift */,
 				935807E94B1B475788F2B066 /* LibraryFeatures.swift */,
@@ -365,6 +368,7 @@
 			files = (
 				728FDC4664A3B800FE097236 /* CedarApp.swift in Sources */,
 				12192AD6F0CE44104F091858 /* WelcomeView.swift in Sources */,
+				30F85528B2A341B3AEBE9E97 /* RecordingBookmarks.swift in Sources */,
 				64BBC38E2C2D450B59BB9403 /* RecordingStore.swift in Sources */,
 				6A55FE384AED892F06183C39 /* AudioController.swift in Sources */,
 				CFFEB018264F4D9E8AB22523 /* LibraryFeatures.swift in Sources */,
@@ -463,7 +467,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Cedar/Info.plist;
@@ -476,7 +480,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.9.0;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -643,7 +647,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Cedar/Info.plist;
@@ -656,7 +660,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.9.0;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

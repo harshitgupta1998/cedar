@@ -95,6 +95,21 @@ final class AudioController: NSObject, ObservableObject {
         }
     }
 
+    func bookmarkRecordingMoment() {
+        guard let id = recordingID, let recorder, recorder.isRecording else { return }
+        let moment = recorder.currentTime
+        do {
+            _ = try store.addBookmark(recordingID: id, seconds: moment)
+            notice = "Bookmarked \(audioTime(moment)). Recording continues."
+        } catch { errorMessage = "Couldn’t save the bookmark. Recording continues. \(error.localizedDescription)" }
+    }
+
+    @discardableResult
+    func bookmarkPlaybackPosition() throws -> RecordingBookmark {
+        guard recordingID == nil, let id = playingID, let player else { throw BookmarkError.invalidPosition }
+        return try store.addBookmark(recordingID: id, seconds: player.currentTime)
+    }
+
     func stopRecording(status: Recording.Status = .saved) {
         guard let id = recordingID else { return }
         let duration = recorder?.currentTime ?? elapsed

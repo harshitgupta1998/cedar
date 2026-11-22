@@ -73,6 +73,9 @@ struct LibraryView: View {
                         Text("Audio is being saved on this iPhone.")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                        Button { audio.bookmarkRecordingMoment() } label: { Label("Bookmark this moment", systemImage: "bookmark") }
+                            .buttonStyle(.bordered)
+                            .accessibilityIdentifier("recorder.bookmark")
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
@@ -240,6 +243,7 @@ struct RecordingDetailView: View {
     @State private var showDelete = false
     @State private var title = ""
     @State private var actionError: String?
+    @State private var bookmarkFeedback: String?
 
     private var item: Recording? { store.recordings.first { $0.id == recordingID } }
     private var selected: Bool { audio.playingID == recordingID }
@@ -263,6 +267,10 @@ struct RecordingDetailView: View {
                         Label("Action checklist", systemImage: "checklist")
                     }
                     .accessibilityIdentifier("recording.checklist")
+                    NavigationLink { RecordingBookmarksView(recordingID: recordingID) } label: {
+                        Label("Bookmarks", systemImage: "bookmark")
+                    }
+                    .accessibilityIdentifier("recording.bookmarks")
 
                     VStack(spacing: 24) {
                         Image(systemName: "waveform")
@@ -291,6 +299,17 @@ struct RecordingDetailView: View {
                         .buttonStyle(.borderedProminent)
                         .tint(CedarStyle.forest)
                         .accessibilityIdentifier("playback.toggle")
+                        Button {
+                            do {
+                                let marker = try audio.bookmarkPlaybackPosition()
+                                bookmarkFeedback = "Bookmarked \(audioTime(marker.seconds))."
+                            } catch { actionError = error.localizedDescription }
+                        } label: { Label("Bookmark position", systemImage: "bookmark") }
+                        .disabled(!selected || audio.recordingID != nil)
+                        .accessibilityIdentifier("playback.bookmark")
+                        if let bookmarkFeedback {
+                            Text(bookmarkFeedback).font(.caption).accessibilityIdentifier("playback.bookmarkFeedback")
+                        }
                         Text(selected ? (audio.isPlaying ? "Playing" : "Paused") : "Ready to play")
                             .font(.footnote)
                             .foregroundStyle(.secondary)

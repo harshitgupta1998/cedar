@@ -47,6 +47,7 @@ final class RecordingStore: ObservableObject {
     @Published private(set) var transcriptUpdates = 0
     @Published private(set) var notesUpdates = 0
     @Published private(set) var checklistUpdates = 0
+    @Published private(set) var bookmarkUpdates = 0
     @Published private(set) var recoveryNotice: String?
     private var activeRecordings = Set<UUID>()
     let root: URL
@@ -345,6 +346,56 @@ final class RecordingStore: ObservableObject {
         try JSONEncoder().encode(notes).write(to: directory(item.id).appendingPathComponent("notes.json"),
                                               options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
         notesUpdates += 1
+    }
+
+    func loadBookmarks(for id: UUID) throws -> RecordingBookmarks {
+        guard recordings.contains(where: { $0.id == id }) else { throw StoreError.notFound }
+        let url = directory(id).appendingPathComponent("bookmarks.json")
+        guard files.fileExists(atPath: url.path) else { return RecordingBookmarks(formatVersion: 1, recordingID: id, items: []) }
+        do {
+            var document = try JSONDecoder().decode(RecordingBookmarks.self, from: Data(contentsOf: url))
+            try document.validate(for: id)
+            document.items.sort { $0.positionMS == $1.positionMS ? $0.createdAt < $1.createdAt : $0.positionMS < $1.positionMS }
+            return document
+        } catch { throw BookmarkError.unreadable }
+    }
+
+    private func writeBookmarks(_ document: RecordingBookmarks) throws {
+        guard recordings.contains(where: { $0.id == document.recordingID }) else { throw StoreError.notFound }
+        try document.validate(for: document.recordingID)
+        try JSONEncoder().encode(document).write(to: directory(document.recordingID).appendingPathComponent("bookmarks.json"),
+                                                options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        bookmarkUpdates += 1
+    }
+
+    @discardableResult
+    func addBookmark(recordingID: UUID, seconds: TimeInterval, title: String? = nil) throws -> RecordingBookmark {
+        guard let recording = recordings.first(where: { $0.id == recordingID }) else { throw StoreError.notFound }
+        let milliseconds = seconds * 1000
+        guard milliseconds.isFinite, milliseconds >= 0, milliseconds < Double(Int.max) else { throw BookmarkError.invalidPosition }
+        if !activeRecordings.contains(recordingID) {
+            guard ![.recording, .needsRecovery].contains(recording.status), seconds <= recording.duration + 0.001 else { throw BookmarkError.invalidPosition }
+        }
+        var document = try loadBookmarks(for: recordingID)
+        let item = RecordingBookmark(id: UUID(), positionMS: Int(milliseconds.rounded(.down)),
+                                     title: title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "Bookmark at \(audioTime(seconds))", createdAt: Date())
+        document.items.append(item)
+        try writeBookmarks(document)
+        return item
+    }
+
+    func renameBookmark(_ original: RecordingBookmark, recordingID: UUID, title: String) throws {
+        var document = try loadBookmarks(for: recordingID)
+        guard let index = document.items.firstIndex(where: { $0.id == original.id }), document.items[index] == original else { throw BookmarkError.changed }
+        document.items[index].title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        try writeBookmarks(document)
+    }
+
+    func removeBookmark(_ original: RecordingBookmark, recordingID: UUID) throws {
+        var document = try loadBookmarks(for: recordingID)
+        guard document.items.contains(original) else { throw BookmarkError.changed }
+        document.items.removeAll { $0.id == original.id }
+        try writeBookmarks(document)
     }
 
     func loadChecklist(for id: UUID) throws -> RecordingChecklist {

@@ -17,6 +17,7 @@ struct NotesView: View {
     @State private var copied = false
     @State private var addedActions = Set<String>()
     @State private var sourceExcerpts: [SourceExcerpt] = []
+    @State private var bookmarkFeedback: String?
 
     private var generating: Bool { controller.activeRecordingID == recordingID }
     private var showsFeedback: Bool { controller.lastRecordingID == nil || controller.lastRecordingID == recordingID }
@@ -116,8 +117,18 @@ struct NotesView: View {
                                 }
                             }.buttonStyle(.borderless).padding(.vertical, 4)
                         }
-                        if audio.playingID == recordingID && audio.isPlaying {
-                            Button("Pause source audio") { audio.pausePlayback() }.accessibilityIdentifier("notes.pauseSource")
+                        if audio.playingID == recordingID {
+                            Button(audio.isPlaying ? "Pause source audio" : "Resume source audio") {
+                                if audio.isPlaying { audio.pausePlayback() }
+                                else if let item = store.recordings.first(where: { $0.id == recordingID }) { audio.togglePlayback(item) }
+                            }.accessibilityIdentifier("notes.pauseSource")
+                            Button("Bookmark source position") {
+                                do {
+                                    let marker = try audio.bookmarkPlaybackPosition()
+                                    bookmarkFeedback = "Bookmarked \(audioTime(marker.seconds))."
+                                } catch { loadError = error.localizedDescription }
+                            }.accessibilityIdentifier("notes.bookmarkSource")
+                            if let bookmarkFeedback { Text(bookmarkFeedback).font(.caption) }
                         }
                     } else { Text("The transcript changed. Regenerate notes before using source playback.").font(.footnote) }
                 }
