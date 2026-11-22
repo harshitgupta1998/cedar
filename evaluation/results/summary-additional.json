@@ -1,0 +1,66 @@
+{
+  "cases" : [
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "owner-correction",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nLee offered to run the demo. We corrected that assignment: Priya will run the demo on Wednesday. Lee will send the invitations on Tuesday.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 2.622426986694336,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "time-correction",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nThe appointment was originally scheduled for 2 pm, which has been adjusted to 3 pm. The confirmed time is set to 3 pm.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.128594994544983,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "brainstorm-only",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nWe decided to keep using the current recorder. No replacement was approved. We will revisit the idea later.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\n• When will we revisit the idea?\n  Source: “We will revisit the idea later, without a date.”\n\nReview note\n1 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 2.243252992630005,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "privacy-and-deadline",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nRiya will export the notes on Saturday. Do not upload the audio. Only the text notes should be shared, and the audio stays on the phone.\n\nAction items\n• Export the notes on Saturday\n  Owner: Riya · Due: Saturday\n  Source: “Riya will export the notes on Saturday.”\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 2.9686379432678223,
+      "sectionFailures" : [
+
+      ]
+    }
+  ],
+  "environment" : "macOS \/ Metal \/ llama.cpp b9000",
+  "modelID" : "Qwen3-0.6B-Q4_K_M",
+  "passedCases" : 4,
+  "peakResidentMiB" : 1115.890625,
+  "promptVersion" : "source-summary-actions-v1\/non-thinking",
+  "totalCases" : 4
+}

@@ -1,0 +1,108 @@
+{
+  "cases" : [
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "decisions-and-owners",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nWe rejected automatic uploads, with Maya testing recording on Friday and Jordan reviewing summary accuracy on Monday.\n\nAction items\n• Maya will test recording on Friday\n  Owner: Maya · Due: Friday\n  Source: “Maya will test recording on Friday.”\n\n• Jordan will review summary accuracy on Monday\n  Owner: Jordan · Due: Monday\n  Source: “Jordan will review summary accuracy on Monday.”\n\n• Audio will stay on the phone\n  Owner: Audio · Due: Not specified\n  Source: “Audio will stay on the phone”\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n1 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.3443779945373535,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "unassigned-task",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nWe discussed improving search. No owner was assigned and no deadline was agreed. This is an idea to revisit, not an approved task.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\n• Could you clarify the owner and deadline for the search update?\n  Source: “No owner was assigned and no deadline was agreed.”\n\nReview note\n1 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 2.449442982673645,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "corrected-numbers",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nThe final approved budget is $350, and the launch was moved from Tuesday to Thursday.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n3 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.1298919916152954,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "negated-action",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nMaya will not email the client. Jordan already sent the invoice. No further action is required.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n3 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.296308994293213,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "conditional-task",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nThe proposal is pending approval. Sam might review the draft. No work has been assigned yet.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\n• What is the status of the draft?\n  Source: “If it is approved, Sam might review the draft.”\n\n• When is the draft reviewed?\n  Source: “No work has been assigned to Sam yet.”\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.924359917640686,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "quoted-instruction",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nThe meeting was scheduled for Tuesday at noon, with the decision to hold it as stated in the transcript.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 2.647633910179138,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "short-note",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nRemember to buy milk.\n\nAction items\n• Remember to buy milk.\n  Owner: Not specified · Due: Not specified\n  Source: “Remember to buy milk.”\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 2.119391083717346,
+      "sectionFailures" : [
+
+      ]
+    }
+  ],
+  "environment" : "macOS \/ Metal \/ llama.cpp b9000",
+  "modelID" : "Qwen3-0.6B-Q4_K_M",
+  "passedCases" : 7,
+  "peakResidentMiB" : 1119.78125,
+  "promptVersion" : "source-summary-actions-v1\/non-thinking",
+  "totalCases" : 7
+}

@@ -52,9 +52,9 @@ struct EvaluateLongNotes {
                             environment: "macOS / Metal / llama.cpp b9000; synthetic text, not a recording",
                             sourceWords: words, equivalentMinutesAt150WordsPerMinute: Double(words) / 150,
                             seconds: Date().timeIntervalSince(start), peakResidentMiB: Double(usage.ru_maxrss) / 1_048_576,
-                            sections: output.components(separatedBy: "Section ").count - 1,
+                            sections: output.components(separatedBy: "\n").filter { $0.range(of: #"^Section [0-9]+ of [0-9]+$"#, options: .regularExpression) != nil }.count,
                             containsEarlyFact: output.contains("Maya") && output.contains("Monday"),
-                            containsMiddleFact: output.contains("Noor") && output.contains("3 pm"),
+                            containsMiddleFact: output.localizedCaseInsensitiveContains("Noor") && output.localizedCaseInsensitiveContains("3 pm"),
                             containsFinalFact: output.contains("Zoe") && output.contains("Friday"),
                             missingFacts: ["Maya", "Monday", "Jordan", "Tuesday", "Priya", "Wednesday", "Lee", "Thursday", "350", "Riya", "Saturday", "Noor", "3 pm", "Sam", "pending", "Alex", "invoice", "Zoe", "Friday"].filter { !output.localizedCaseInsensitiveContains($0) },
                             output: output)

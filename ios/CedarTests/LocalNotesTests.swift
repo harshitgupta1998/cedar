@@ -150,7 +150,7 @@ final class LocalNotesTests: XCTestCase {
         XCTAssertTrue(result.contains("Section 1 of"))
         XCTAssertTrue(result.contains("Monday"))
         XCTAssertTrue(result.contains("Friday"))
-        let count = result.components(separatedBy: "Section ").count - 1
+        let count = result.components(separatedBy: "\n").filter { $0.range(of: #"^Section [0-9]+ of [0-9]+$"#, options: .regularExpression) != nil }.count
         XCTAssertGreaterThan(count, 1)
         XCTAssertTrue(result.contains("Section \(count) of \(count)"))
         let cancelled = Task {
@@ -159,6 +159,69 @@ final class LocalNotesTests: XCTestCase {
         }
         do { _ = try await cancelled.value; XCTFail("Cancellation must throw, not return a partial summary") }
         catch is CancellationError { }
+    }
+
+    func testActionEvidenceAndMetadataAreCheckedAgainstActualSource() throws {
+        let source = "Maya will test recording on Friday. Sam might review if approved. Jordan already sent the invoice."
+        let json = #"""
+        {"summary":"Maya will test on Friday; Sam's review is conditional and Jordan's invoice is complete.","actions":[
+          {"task":"Test recording","owner":"Maya","due":"Friday","evidence":"Maya will test recording on Friday."},
+          {"task":"Review the draft","owner":"Sam","due":null,"evidence":"Sam might review if approved."},
+          {"task":"Send the invoice","owner":"Jordan","due":null,"evidence":"Jordan already sent the invoice."}
+        ],"followUps":[{"text":"What approval is needed before Sam reviews?","evidence":"Sam might review if approved."}]}
+        """#
+        let parsed = try NotesSection.parse(json, source: source)
+        XCTAssertEqual(parsed.actions.count, 1)
+        XCTAssertEqual(parsed.actions[0].owner, "Maya")
+        XCTAssertEqual(parsed.followUps.count, 1)
+        XCTAssertEqual(parsed.omittedItems, 2)
+        let wrongDate = json.replacingOccurrences(of: "\"due\":\"Friday\"", with: "\"due\":\"Monday\"")
+        XCTAssertFalse(try NotesSection.parse(wrongDate, source: source).actions.contains { $0.due == "Monday" })
+        let wrongOwner = json.replacingOccurrences(of: "\"owner\":\"Maya\"", with: "\"owner\":\"Alex\"")
+        XCTAssertFalse(try NotesSection.parse(wrongOwner, source: source).actions.contains { $0.owner == "Alex" })
+        let fakeQuote = json.replacingOccurrences(of: "Maya will test recording on Friday.", with: "Maya will call the client.")
+        XCTAssertFalse(try NotesSection.parse(fakeQuote, source: source).actions.contains { $0.task.contains("client") })
+    }
+
+    func testUnassignedActionsAndSuggestedQuestionsRemainSeparate() throws {
+        let source = "Please test recording. No owner was assigned and no deadline was agreed."
+        let json = #"""
+        {"summary":"Recording needs testing; the owner and deadline remain unspecified.","actions":[{"task":"Test recording","owner":null,"due":null,"evidence":"Please test recording."}],"followUps":[{"text":"Who will own the test and when is it needed?","evidence":"No owner was assigned and no deadline was agreed."},{"text":"Can we finish on Monday?","evidence":"No owner was assigned and no deadline was agreed."}]}
+        """#
+        let parsed = try NotesSection.parse(json, source: source)
+        XCTAssertEqual(parsed.actions.count, 1)
+        XCTAssertNil(parsed.actions[0].owner)
+        XCTAssertNil(parsed.actions[0].due)
+        XCTAssertEqual(parsed.followUps.count, 1)
+        let output = NotesSection.render(overview: parsed.summary, sections: [parsed])
+        XCTAssertTrue(output.contains("Owner: Not specified · Due: Not specified"))
+        XCTAssertTrue(output.contains("Suggested follow-ups · Not commitments"))
+        XCTAssertTrue(output.contains("Source: “Please test recording.”"))
+    }
+
+    func testNonActionsAndTranscriptCopiesCannotMasqueradeAsUsefulNotes() throws {
+        let source = "Thursday is the final launch day. No further action is required."
+        let json = #"""
+        {"summary":"Launch is on Thursday and no additional action is needed.","actions":[{"task":"Final launch day","owner":"Thursday","due":"Thursday","evidence":"Thursday is the final launch day."}],"followUps":[{"text":"Should we launch?","evidence":"No further action is required."}]}
+        """#
+        let parsed = try NotesSection.parse(json, source: source)
+        XCTAssertTrue(parsed.actions.isEmpty)
+        XCTAssertTrue(parsed.followUps.isEmpty)
+        XCTAssertThrowsError(try NotesSection.parse("not JSON", source: source))
+        let echo = String(repeating: "Repeated transcript words. ", count: 60)
+        let data = try JSONSerialization.data(withJSONObject: ["summary": echo, "actions": [], "followUps": []])
+        XCTAssertThrowsError(try NotesSection.parse(String(decoding: data, as: UTF8.self), source: echo))
+    }
+
+    func testLongSummarySelectionKeepsCompleteSourceStatementsWithinBudget() throws {
+        let source = "We reviewed the pilot. " + String(repeating: "The discussion repeated the same facts without a new decision. ", count: 30) + "The final approved budget is $350. Priya will review accuracy on Wednesday. The battery impact is still unknown."
+        let selected = try NotesSourceSelection.select(source)
+        XCTAssertLessThanOrEqual(selected.split(whereSeparator: \.isWhitespace).count, 90)
+        XCTAssertTrue(selected.contains("The final approved budget is $350."))
+        XCTAssertTrue(selected.contains("Priya will review accuracy on Wednesday."))
+        XCTAssertTrue(selected.contains("The battery impact is still unknown."))
+        XCTAssertTrue(selected.hasSuffix("."))
+        XCTAssertLessThan(selected.count, source.count / 2)
     }
 
 }

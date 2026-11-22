@@ -128,7 +128,7 @@ final class NotesEditingTests: XCTestCase {
         }
         var usage = rusage()
         getrusage(RUSAGE_SELF, &usage)
-        let sections = output.components(separatedBy: "Section ").count - 1
+        let sections = output.components(separatedBy: "\n").filter { $0.range(of: #"^Section [0-9]+ of [0-9]+$"#, options: .regularExpression) != nil }.count
         let missing = ["Maya", "Monday", "Jordan", "Tuesday", "Priya", "Wednesday", "Lee", "Thursday", "350", "Riya", "Saturday", "Noor", "3 pm", "Sam", "pending", "Alex", "invoice", "Zoe", "Friday"].filter { !output.localizedCaseInsensitiveContains($0) }
         let report: [String: Any] = ["modelID": model.rawValue, "promptVersion": model.promptVersion,
             "environment": "Physical iPhone 13 / Metal / XCTest; synthetic text, not audio",

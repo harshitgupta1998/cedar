@@ -13,9 +13,9 @@ enum NotesModel: String, CaseIterable, Identifiable, Codable, Sendable {
         URL(string: "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/50968a4468ef4233ed78cd7c3de230dd1d61a56b/Qwen3-0.6B-Q4_K_M.gguf")!
     }
     var contextTokens: UInt32 { 1_536 }
-    var inputTokens: Int32 { 1_000 }
+    var inputTokens: Int32 { 900 }
     var memoryHeadroom: UInt64 { 384_000_000 }
-    var promptVersion: String { "sections-v4/non-thinking" }
+    var promptVersion: String { "source-summary-actions-v1/non-thinking" }
 
     static func displayName(for id: String) -> String {
         switch id {

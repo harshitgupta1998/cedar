@@ -22,7 +22,7 @@ struct NotesView: View {
     var body: some View {
         List {
             Section("Offline notes · Experimental") {
-                Text("Generate section-by-section notes on this iPhone. Review names, dates and decisions against your transcript.")
+                Text("Get a concise summary, source-backed action items and suggested follow-up questions. Suggestions are not commitments. Review the notes against your transcript.")
                     .font(.subheadline)
                 Text("Qwen3 0.6B · 397 MB download")
                     .font(.caption).foregroundStyle(.secondary)

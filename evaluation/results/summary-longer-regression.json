@@ -1,0 +1,24 @@
+{
+  "cases" : [
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "longer-regression",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nMaya volunteered to do that test on Friday. She will record for thirty minutes with Airplane Mode on and the screen locked, then listen near the start and the end. Jordan will compare the generated notes with the transcript on Monday. We also discussed possible support for Spanish, but no one was assigned that work and there is no deadline. We agreed that the first release of offline notes should be labeled experimental.\n\nSummary method: selected complete transcript statements.\n\nAction items\n• Jordan's summary accuracy review on Monday\n  Owner: Jordan · Due: Monday\n  Source: “Jordan will compare the generated notes with the transcript on Monday. Jordan is checking accuracy, while Maya is checking recording reliability.”\n\n• Maya volunteered to do that test on Friday\n  Owner: Maya · Due: Friday\n  Source: “Maya volunteered to do that test on Friday”\n\n• Jordan will compare the generated notes with the transcript on Monday\n  Owner: Jordan · Due: Monday\n  Source: “Jordan will compare the generated notes with the transcript on Monday”\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n3 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 4.734293103218079,
+      "sectionFailures" : [
+
+      ]
+    }
+  ],
+  "environment" : "macOS \/ Metal \/ llama.cpp b9000",
+  "modelID" : "Qwen3-0.6B-Q4_K_M",
+  "passedCases" : 1,
+  "peakResidentMiB" : 1105.125,
+  "promptVersion" : "source-summary-actions-v1\/non-thinking",
+  "totalCases" : 1
+}

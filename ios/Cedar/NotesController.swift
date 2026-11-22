@@ -144,7 +144,7 @@ final class NotesController: ObservableObject {
                 let output = try await engine.summarize(transcript.text, modelURL: model.installedURL, model: model) { [weak self] section, total in
                     Task { @MainActor [weak self] in
                         guard let self, self.startedAt == began, self.activeRecordingID == transcript.recordingID else { return }
-                        self.phase = "Summarizing section \(section) of \(total)…"
+                        self.phase = section == 0 ? "Writing overall summary…" : "Summarizing section \(section) of \(total)…"
                     }
                 }
                 try Task.checkCancellation()

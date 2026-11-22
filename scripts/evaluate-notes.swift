@@ -8,6 +8,10 @@ struct EvaluateNotes {
         let text: String
         let requiredAny: [[String]]
         let forbidden: [String]
+        let summaryRequiredAny: [[String]]?
+        let actionsRequired: [String]?
+        let actionsForbidden: [String]?
+        let followUpsRequiredAny: [[String]]?
     }
     struct Result: Encodable {
         let id: String
@@ -16,7 +20,8 @@ struct EvaluateNotes {
         let missingGroups: [[String]]
         let forbiddenMatches: [String]
         let error: String?
-        var passed: Bool { error == nil && missingGroups.isEmpty && forbiddenMatches.isEmpty }
+        let sectionFailures: [String]
+        var passed: Bool { error == nil && missingGroups.isEmpty && forbiddenMatches.isEmpty && sectionFailures.isEmpty }
     }
     struct Report: Encodable {
         let modelID: String
@@ -52,8 +57,20 @@ struct EvaluateNotes {
                 !alternatives.contains { text.localizedCaseInsensitiveContains($0) }
             }
             let forbidden = fixture.forbidden.filter { text.localizedCaseInsensitiveContains($0) }
+            let summary = text.components(separatedBy: "\n\nAction items").first ?? text
+            let actions = text.components(separatedBy: "\n\nAction items").dropFirst().first?.components(separatedBy: "\n\nSuggested follow-ups").first ?? ""
+            let followUps = text.components(separatedBy: "\n\nSuggested follow-ups").dropFirst().first?.components(separatedBy: "\n\nReview note").first ?? ""
+            var sectionFailures = [String]()
+            for group in fixture.summaryRequiredAny ?? [] where !group.contains(where: { summary.localizedCaseInsensitiveContains($0) }) {
+                sectionFailures.append("Summary missing one of: \(group)")
+            }
+            for value in fixture.actionsRequired ?? [] where !actions.localizedCaseInsensitiveContains(value) { sectionFailures.append("Actions missing: \(value)") }
+            for value in fixture.actionsForbidden ?? [] where actions.localizedCaseInsensitiveContains(value) { sectionFailures.append("Forbidden action: \(value)") }
+            for group in fixture.followUpsRequiredAny ?? [] where !group.contains(where: { followUps.localizedCaseInsensitiveContains($0) }) {
+                sectionFailures.append("Follow-ups missing one of: \(group)")
+            }
             results.append(Result(id: fixture.id, output: text, seconds: Date().timeIntervalSince(start),
-                                  missingGroups: missing, forbiddenMatches: forbidden, error: failure))
+                                  missingGroups: missing, forbiddenMatches: forbidden, error: failure, sectionFailures: sectionFailures))
         }
         var usage = rusage()
         getrusage(RUSAGE_SELF, &usage)

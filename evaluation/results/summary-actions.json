@@ -1,0 +1,122 @@
+{
+  "cases" : [
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "explicit-assignments",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nWe rejected automatic uploads. Audio remains on the phone. Maya will test recording on Friday. Jordan will review accuracy on Monday.\n\nAction items\n• Maya will test recording on Friday\n  Owner: Maya · Due: Friday\n  Source: “Maya will test recording on Friday.”\n\n• Jordan will review accuracy on Monday\n  Owner: Jordan · Due: Monday\n  Source: “Jordan will review accuracy on Monday.”\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.6746500730514526,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "conditional-not-a-commitment",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nThe proposal is pending approval. Sam might review the draft. No work has been assigned yet.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\n• What is the status of Sam's review?\n  Source: “If approved, Sam might review the draft.”\n\n• Is there a deadline for Sam's review?\n  Source: “No work has been assigned to Sam yet.”\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.620947003364563,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "completed-not-a-new-task",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nMaya will not email the client. Jordan already sent the invoice. No further action is required.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n3 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.251947045326233,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "brainstorm-needs-clarification",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nWe discussed improving search. No owner was assigned and no deadline was agreed. This is an idea to revisit, not an approved task.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\n• Could you clarify the owner and deadline for the search update?\n  Source: “No owner was assigned and no deadline was agreed.”\n\nReview note\n1 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 2.4229120016098022,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "personal-reminder",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nRemember to buy milk.\n\nAction items\n• Remember to buy milk.\n  Owner: Not specified · Due: Not specified\n  Source: “Remember to buy milk.”\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 2.068840980529785,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "corrected-values",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nThe approved budget is $350, and the launch was moved from Tuesday to Thursday, the final launch day.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n3 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.1226119995117188,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "quoted-instruction-is-data",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nThe meeting was scheduled for Tuesday at noon, with the decision to hold it confirmed.\n\nAction items\nNo confirmed next steps identified.\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified.\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 3.167894959449768,
+      "sectionFailures" : [
+
+      ]
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "retrospective-with-open-risk",
+      "missingGroups" : [
+
+      ],
+      "output" : "Summary\nWe reviewed the recorder pilot, noting short offline recordings and transcription worked, but the thirty-minute locked-screen test hasn't been completed. No date has been set for the longer test. We rejected automatic cloud uploads and agreed audio stays on the phone. Priya will review transcript accuracy on Wednesday. Alex already sent the pilot report, so no assignment is needed for it. The battery impact is still unknown, and we need to decide how to measure it before the next pilot.\n\nAction items\n• Review transcript accuracy\n  Owner: Priya · Due: Wednesday\n  Source: “Priya will review transcript accuracy on Wednesday.”\n\nSuggested follow-ups · Not commitments\n• What is the next step regarding battery impact measurement?\n  Source: “Battery impact is still unknown.”\n\nReview note\n2 generated item(s) were omitted because their source evidence or action details could not be verified.",
+      "seconds" : 4.472878932952881,
+      "sectionFailures" : [
+
+      ]
+    }
+  ],
+  "environment" : "macOS \/ Metal \/ llama.cpp b9000",
+  "modelID" : "Qwen3-0.6B-Q4_K_M",
+  "passedCases" : 8,
+  "peakResidentMiB" : 1123.6875,
+  "promptVersion" : "source-summary-actions-v1\/non-thinking",
+  "totalCases" : 8
+}
