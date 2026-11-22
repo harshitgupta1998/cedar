@@ -22,15 +22,11 @@ struct NotesView: View {
     var body: some View {
         List {
             Section("Offline notes · Experimental") {
-                Text("Generate a short summary on this iPhone. Review names, dates and decisions against your transcript.")
+                Text("Generate section-by-section notes on this iPhone. Review names, dates and decisions against your transcript.")
                     .font(.subheadline)
-                Picker("Notes model", selection: $controller.selectedModel) {
-                    ForEach(NotesModel.allCases) { model in Text(model.name).tag(model) }
-                }
-                .disabled(controller.isBusy)
-                .accessibilityIdentifier("notes.model")
-                Text(controller.selectedModel == .smol360 ? "Compact model · 271 MB" : "Larger model · 1.11 GB · Uses more memory")
+                Text("Qwen3 0.6B · 397 MB download")
                     .font(.caption).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("notes.model")
                 if controller.modelReady {
                     Label("\(controller.selectedModel.downloadSize) model installed", systemImage: "checkmark.circle")
                         .accessibilityIdentifier("notes.modelReady")
@@ -39,7 +35,7 @@ struct NotesView: View {
                     }
                     .disabled(controller.isBusy || transcription.isBusy || audio.recordingID != nil || transcript == nil)
                     .accessibilityIdentifier("notes.generate")
-                    Text("Start with a short English recording, around five minutes or less.")
+                    Text("Long English transcripts are split into sections in transcript order. Later sections may revise earlier decisions. Designed for up to about an hour of speech (16,000 words maximum); device validation is ongoing. Processing may take several minutes.")
                         .font(.caption).foregroundStyle(.secondary)
                 } else {
                     Button("Download model · \(controller.selectedModel.downloadSize)") { controller.download() }
@@ -64,7 +60,7 @@ struct NotesView: View {
                     }
                     Button("Cancel", role: .cancel) { controller.cancel() }
                         .accessibilityIdentifier("notes.cancel")
-                    Text("Keep Cedar open while processing.").font(.caption).foregroundStyle(.secondary)
+                    Text("Keep Cedar open while processing. The screen stays awake; leaving the app cancels this run.").font(.caption).foregroundStyle(.secondary)
                 }
             }
             if let recovery = store.recoveryNotice {
@@ -75,7 +71,7 @@ struct NotesView: View {
             }
             if let notes {
                 Section(notes.isEdited ? "Edited notes" : "Generated notes") {
-                    Text(NotesModel(rawValue: notes.modelID)?.name ?? notes.modelID)
+                    Text(NotesModel.displayName(for: notes.modelID))
                         .font(.caption).foregroundStyle(.secondary)
                     if let transcript, !notes.matches(transcript) {
                         Label("Transcript changed. Generate again to update these notes.", systemImage: "exclamationmark.triangle")
@@ -105,6 +101,10 @@ struct NotesView: View {
             }
             Section {
                 Button("Model licenses and source") { showLicenses = true }
+                if controller.retiredModelsRemain {
+                    Button("Remove old downloads") { controller.removeRetiredModels() }
+                        .disabled(controller.isBusy)
+                }
                 if controller.modelReady {
                     Button("Remove downloaded model", role: .destructive) { controller.removeModel() }
                         .disabled(controller.isBusy)
@@ -151,12 +151,9 @@ private struct NotesLicensesView: View {
         NavigationStack {
             List {
                 Section {
-                    Text("SmolLM2 360M Instruct by Hugging Face · Apache 2.0. Q4_K_M conversion by Unsloth.")
-                    Text("Qwen3 1.7B by the Qwen team · Apache 2.0. Q4_K_M conversion by Unsloth.")
-                    Link("Qwen model and license", destination: URL(string: "https://huggingface.co/Qwen/Qwen3-1.7B")!)
-                    Link("Original model", destination: URL(string: "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct")!)
-                    Link("Compressed model", destination: URL(string: "https://huggingface.co/unsloth/SmolLM2-360M-Instruct-GGUF")!)
-                    Text(license("SmolLM2")).font(.caption).textSelection(.enabled)
+                    Text("Qwen3 0.6B by the Qwen team · Apache 2.0. Q4_K_M conversion by Unsloth.")
+                    Link("Qwen model and license", destination: URL(string: "https://huggingface.co/Qwen/Qwen3-0.6B")!)
+                    Link("Compressed model", destination: URL(string: "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF")!)
                     Text(license("Qwen")).font(.caption).textSelection(.enabled)
                 }
                 Section("llama.cpp · MIT") {

@@ -52,24 +52,23 @@ Open a recording → **Transcript**, choose a language, and tap **Transcribe rec
 
 ## Try offline notes
 
-Open a saved transcript → **Offline notes**, choose a model, download it and tap **Generate notes**. Downloads come from pinned Hugging Face revisions and are verified by file size and SHA-256 before installation and inference. Processing runs locally after download. Both models are Apache 2.0 licensed.
+Open a saved transcript → **Offline notes**, download Qwen3 0.6B and tap **Generate notes**. This Apache 2.0 model is a 396,705,472-byte download (397 MB), pinned to a Hugging Face revision and verified by size and SHA-256 before installation and inference. Processing runs locally after download.
 
-| Model | Download | Input budget including instructions | Context |
-| --- | --- | --- | --- |
-| SmolLM2 360M Q4_K_M | 271 MB | 3,500 tokens | 4,096 tokens |
-| Qwen3 1.7B Q4_K_M | 1.11 GB | 1,600 tokens | 2,048 tokens |
+Version 0.6.0 replaces SmolLM2 360M and Qwen3 1.7B. Launching the app removes their two downloaded weight files (about 1.38 GB if both were installed). Saved recordings, transcripts, notes and revisions are retained. Old notes keep their original model attribution. Removing unused weights frees storage; memory savings during inference come from the new model and smaller context.
 
-Qwen3 uses its published non-thinking template. Start with short English recordings around five minutes or less. Both models allow up to 384 output tokens. Longer input produces a clear error. These text budgets do not cap recording duration. The larger model trades more memory and storage for better results in the tested examples. The app checks its available memory before loading a model. A larger model may be unavailable on a device or under current memory pressure.
+Long transcripts are split using the actual model tokenizer, with at most 1,000 prompt tokens and 384 output tokens per section in a fixed 1,536-token context. One model and context are reused sequentially, with the attention cache cleared between sections. Every source word is included once; oversized input produces an error instead of silent truncation. Longer text therefore increases processing time rather than context memory.
 
-Downloads show progress and can be cancelled and retried. Uncommitted staging files from a terminated download are cleaned up on launch. Model files are excluded from iCloud backups and Git. The selected model can be removed from the notes screen. Keep Cedar open during generation. Leaving the screen or backgrounding the app cancels generation. The model and context are unloaded after each request.
+The target is about an hour of English speech. Limits are **16,000 words, 180,000 characters and 64 sections**, whichever is reached first. Duration is only a rough guide: speaking rate and tokenization vary. Section notes follow transcript order; later sections can revise earlier decisions. There is no final combined conclusion across sections. These text limits do not cap recording duration. Actual hour-long capture and transcription remain unverified.
 
-Use **Edit notes**, **Copy notes**, **Share notes**, or **Previous versions** below the saved summary. Regeneration and edits archive the previous text. Restoring a version archives the current one first. Outdated notes retain their original transcript identity and remain labeled outdated after editing. Concurrent edits are rejected instead of overwriting newer text.
+Downloads show progress and support cancellation/retry. Uncommitted staging is cleaned up on launch. Model files are excluded from iCloud backups and Git. Keep Cedar open during generation; the screen stays awake. Leaving the notes screen or backgrounding the app cancels the run, keeping previous saved notes. Cancelled/failed jobs do not save partial notes. The model and context are unloaded at the end of the run. Transcription also keeps the screen awake while active.
 
-Review summaries against the transcript. Small models can omit details or invent facts. The summary evaluation improved from 4/7 baseline checks to 6/7 with the revised 360M prompt; Qwen3 passed 7/7 main and 4/4 additional synthetic checks. These limited Mac results do not establish general accuracy. Outputs, limitations and reproduction steps are in [the local evaluation](evaluation/README.md).
+Use **Edit notes**, **Copy notes**, **Share notes**, or **Previous versions** below saved notes. Regeneration and edits archive the previous text. Restoring a version archives the current one first. Outdated notes keep their original transcript identity and stay labeled outdated after editing. Concurrent edits are rejected.
 
-Model and runtime licenses are available in the app. Sources include [SmolLM2](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct), [Qwen3](https://huggingface.co/Qwen/Qwen3-1.7B), [the Qwen3 conversion](https://huggingface.co/unsloth/Qwen3-1.7B-GGUF), and [llama.cpp b9000](https://github.com/ggml-org/llama.cpp/tree/b9000).
+Review notes against the transcript. Small models can omit facts or introduce unsupported conclusions, particularly in long or repetitive text. Short synthetic checks and hour-length text throughput checks are separate evidence; neither certifies real-conversation accuracy. See [raw results, known failures and reproduction steps](evaluation/README.md).
 
-Optional real-inference tests run when the pinned model files are installed in the test host's `Library/Application Support/CedarModels/` directory. CI skips these two cases when the model files are absent. Local tests cover both real models, storage and recovery, editing, restoration, download progress, HTTP failure and cancellation.
+Model and runtime licenses are available in the app: [Qwen3 0.6B](https://huggingface.co/Qwen/Qwen3-0.6B), [pinned compressed weights](https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/tree/50968a4468ef4233ed78cd7c3de230dd1d61a56b), and [llama.cpp b9000](https://github.com/ggml-org/llama.cpp/tree/b9000). Historical model notices are retained in the repository.
+
+Optional real-inference tests require the pinned weight file in the test host's `Library/Application Support/CedarModels/` directory. CI skips model-dependent cases when weights are absent. Tests cover splitting without dropped words, input/cancellation limits, retired-weight cleanup, inference, storage/recovery, edits/restoration, download progress and failures.
 
 ## Recovery
 
@@ -79,7 +78,7 @@ If saved transcript or notes JSON is damaged, Cedar tries the newest valid archi
 
 ## Current milestone
 
-See [development status](docs/development-status.md). Cedar 0.5.0 is installed on the actual iPhone 13 (now iOS 27.2.1). Short recording/playback, offline transcription and 360M notes have been verified by the user. The optional Qwen3 1.7B model passed simulator inference but was rejected by the physical-device test runner’s memory preflight; regular-app verification is pending. Longer recording and interruption checks remain open. See [recording checks and limits](docs/recording-checks.md).
+See [development status](docs/development-status.md). Cedar 0.6.0 is installed on the actual iPhone 13 (now iOS 27.2.1). Short recording/playback, offline transcription and 360M notes have been verified by the user. The user also confirmed that Qwen3 1.7B failed with insufficient app memory in the regular app. Qwen3 0.6B replaces it, and the user confirmed successful generation in the regular app. It also completed a 9,141-word synthetic transcript on this iPhone in 48.7 seconds without a memory error. This verifies text processing, not hour-long audio capture/transcription or factual accuracy. Longer recording and interruption checks remain open. See [recording checks and limits](docs/recording-checks.md).
 
 ## License
 

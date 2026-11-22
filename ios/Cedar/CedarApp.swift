@@ -30,7 +30,7 @@ struct CedarApp: App {
                 let transcript = try store.saveTranscript(Transcript(recordingID: item.id, localeID: "en-US", provider: "UI test",
                     segments: [TranscriptSegment(startMS: 0, endMS: 900, text: "Maya will test Cedar on Friday.")]))
                 try store.saveNotes(LocalNotes(recordingID: item.id, transcriptRevision: transcript.revision,
-                    transcriptFingerprint: LocalNotes.fingerprint(transcript), modelID: NotesModel.smol360.rawValue,
+                    transcriptFingerprint: LocalNotes.fingerprint(transcript), modelID: NotesModel.qwen06.rawValue,
                     createdAt: Date(), processingSeconds: 1, text: "Original notes"))
             } catch { assertionFailure("Could not prepare isolated notes test: \(error)") }
         }

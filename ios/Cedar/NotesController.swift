@@ -1,9 +1,10 @@
 import Combine
 import Foundation
+import UIKit
 
 @MainActor
 final class NotesController: ObservableObject {
-    static var installedModelURL: URL { NotesModel.smol360.installedURL }
+    static var installedModelURL: URL { NotesModel.qwen06.installedURL }
     @Published var selectedModel: NotesModel {
         didSet { UserDefaults.standard.set(selectedModel.rawValue, forKey: "notes.model") }
     }
@@ -13,13 +14,29 @@ final class NotesController: ObservableObject {
     var modelReady: Bool { installedModels.contains(selectedModel) }
 
     init() {
-        selectedModel = NotesModel(rawValue: UserDefaults.standard.string(forKey: "notes.model") ?? "") ?? .smol360
+        selectedModel = NotesModel(rawValue: UserDefaults.standard.string(forKey: "notes.model") ?? "") ?? .qwen06
         installedModels = Set(NotesModel.allCases.filter { FileManager.default.fileExists(atPath: $0.installedURL.path) })
+        do { try NotesModel.removeRetiredModels() }
+        catch {
+            retiredModelsRemain = true
+            errorMessage = "Old model downloads couldn’t be removed. Tap Remove old downloads to retry."
+        }
         // A terminated download may leave a verified-but-uncommitted staging file.
         let staging = (try? FileManager.default.contentsOfDirectory(at: NotesModel.directory, includingPropertiesForKeys: nil)) ?? []
         for file in staging where file.lastPathComponent.hasPrefix("download-") && file.pathExtension == "partial" {
             try? FileManager.default.removeItem(at: file)
         }
+    }
+
+    @Published private(set) var retiredModelsRemain = false
+
+    func removeRetiredModels() {
+        guard !isBusy else { return }
+        do {
+            try NotesModel.removeRetiredModels()
+            retiredModelsRemain = false
+            errorMessage = nil
+        } catch { errorMessage = "Old model downloads couldn’t be removed: \(error.localizedDescription)" }
     }
 
     @Published private(set) var isBusy = false
@@ -31,7 +48,7 @@ final class NotesController: ObservableObject {
     private var job: Task<Void, Never>?
 
     nonisolated static func verifyModel(at url: URL) throws {
-        try NotesModel.smol360.verify(at: url)
+        try NotesModel.qwen06.verify(at: url)
     }
 
     func download() {
@@ -112,13 +129,24 @@ final class NotesController: ObservableObject {
         lastRecordingID = transcript.recordingID
         let model = selectedModel
         phase = "Generating notes with \(model.name)…"
-        startedAt = Date()
+        let began = Date()
+        startedAt = began
         errorMessage = nil
+        let previousIdleSetting = UIApplication.shared.isIdleTimerDisabled
+        UIApplication.shared.isIdleTimerDisabled = true
         job = Task {
-            defer { isBusy = false; activeRecordingID = nil; job = nil; startedAt = nil }
+            defer {
+                UIApplication.shared.isIdleTimerDisabled = previousIdleSetting
+                isBusy = false; activeRecordingID = nil; job = nil; startedAt = nil
+            }
             do {
                 let start = ContinuousClock.now
-                let output = try await engine.summarize(transcript.text, modelURL: model.installedURL, model: model)
+                let output = try await engine.summarize(transcript.text, modelURL: model.installedURL, model: model) { [weak self] section, total in
+                    Task { @MainActor [weak self] in
+                        guard let self, self.startedAt == began, self.activeRecordingID == transcript.recordingID else { return }
+                        self.phase = "Summarizing section \(section) of \(total)…"
+                    }
+                }
                 try Task.checkCancellation()
                 guard let current = try store.loadTranscript(for: transcript.recordingID),
                       LocalNotes.fingerprint(current) == LocalNotes.fingerprint(transcript)

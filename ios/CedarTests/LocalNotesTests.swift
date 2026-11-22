@@ -60,7 +60,7 @@ final class LocalNotesTests: XCTestCase {
     func testLocalModelSummarizesSyntheticNote() async throws {
         let url = NotesController.installedModelURL
         guard FileManager.default.fileExists(atPath: url.path) else {
-            throw XCTSkip("Install the pinned 271 MB model to run real offline inference.")
+            throw XCTSkip("Install the pinned 397 MB model to run real offline inference.")
         }
         let engine = LocalNotesEngine()
         let source = "We tested Cedar today. Offline transcription and saving edits both worked. Maya will test a longer recording on Friday. We decided to keep audio on the phone."
@@ -88,8 +88,77 @@ final class LocalNotesTests: XCTestCase {
         XCTAssertTrue(longerNotes.contains("Friday"))
         XCTAssertTrue(longerNotes.contains("Monday"))
         do {
-            _ = try await engine.summarize(String(repeating: "Long transcript. ", count: 5_000), modelURL: url)
+            _ = try await engine.summarize(String(repeating: "Long transcript. ", count: 9_000), modelURL: url)
             XCTFail("Oversized input must produce a clear error without truncation")
         } catch NotesError.inputTooLong { }
     }
+    func testHourLengthChunkPlanPreservesEveryWordAndStaysWithinBudget() throws {
+        let source = (0..<10_800).map { "word\($0)." }.joined(separator: " ")
+        let chunks = try NotesChunker.chunks(source) { $0.split(separator: " ").count <= 700 }
+        XCTAssertGreaterThan(chunks.count, 10)
+        XCTAssertLessThanOrEqual(chunks.count, NotesChunker.maxSections)
+        XCTAssertEqual(chunks.joined(separator: " "), source)
+        XCTAssertTrue(chunks.allSatisfy { $0.split(separator: " ").count <= 700 })
+        XCTAssertTrue(chunks.last!.contains("word10799."))
+    }
+
+    func testChunkingHandlesWhitespaceAndRejectsUnprocessableInputWithoutTruncation() throws {
+        let chunks = try NotesChunker.chunks("First.\n\nThen café 😊.\tFinally done.") {
+            $0.split(separator: " ").count <= 3
+        }
+        XCTAssertEqual(chunks.joined(separator: " "), "First. Then café 😊. Finally done.")
+        XCTAssertThrowsError(try NotesChunker.chunks(" \n\t") { _ in true })
+        XCTAssertThrowsError(try NotesChunker.chunks("unbreakable") { _ in false })
+        XCTAssertThrowsError(try NotesChunker.chunks(String(repeating: "x ", count: 16_001)) { _ in true })
+        XCTAssertThrowsError(try NotesChunker.chunks(String(repeating: "x", count: 180_001)) { _ in true })
+        XCTAssertThrowsError(try NotesChunker.chunks(String(repeating: "x ", count: 65)) {
+            $0.split(separator: " ").count <= 1
+        })
+    }
+
+    func testCancelledChunkPlanningStopsWithoutPartialResult() async throws {
+        let task = Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try NotesChunker.chunks("First sentence. Second sentence.") { _ in true }
+        }
+        do { _ = try await task.value; XCTFail("Cancelled work must not return notes") }
+        catch is CancellationError { }
+    }
+
+    func testRetiredWeightCleanupPreservesCurrentModelAndSavedDocuments() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let retired = ["SmolLM2-360M-Q4_K_M.gguf", "Qwen3-1.7B-Q4_K_M.gguf"]
+        let retained = ["Qwen3-0.6B-Q4_K_M.gguf", "notes.json", "audio.caf"]
+        for file in retired + retained { try Data(file.utf8).write(to: root.appendingPathComponent(file)) }
+        try NotesModel.removeRetiredModels(in: root)
+        try NotesModel.removeRetiredModels(in: root)
+        for file in retired { XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent(file).path)) }
+        for file in retained { XCTAssertEqual(try Data(contentsOf: root.appendingPathComponent(file)), Data(file.utf8)) }
+    }
+
+    @MainActor
+    func testMultiSectionInferenceUsesWholeSourceAndCancellationDoesNotSavePartialNotes() async throws {
+        let model = NotesModel.qwen06
+        guard FileManager.default.fileExists(atPath: model.installedURL.path) else {
+            throw XCTSkip("Install Qwen3 0.6B for multi-section inference.")
+        }
+        let first = String(repeating: "Maya will test recording on Monday. No cloud upload was approved. ", count: 80)
+        let last = String(repeating: "Zoe will review transcripts on Friday. Audio stays on this phone. ", count: 80)
+        let result = try await LocalNotesEngine().summarize(first + last, modelURL: model.installedURL)
+        XCTAssertTrue(result.contains("Section 1 of"))
+        XCTAssertTrue(result.contains("Monday"))
+        XCTAssertTrue(result.contains("Friday"))
+        let count = result.components(separatedBy: "Section ").count - 1
+        XCTAssertGreaterThan(count, 1)
+        XCTAssertTrue(result.contains("Section \(count) of \(count)"))
+        let cancelled = Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try await LocalNotesEngine().summarize(first, modelURL: model.installedURL)
+        }
+        do { _ = try await cancelled.value; XCTFail("Cancellation must throw, not return a partial summary") }
+        catch is CancellationError { }
+    }
+
 }

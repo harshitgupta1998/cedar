@@ -48,6 +48,9 @@ final class TranscriptionController: ObservableObject {
     func transcribe(_ item: Recording, localeID: String) {
         guard !isBusy else { return }
         begin(item.id, phase: "Transcribing on this iPhone…") { [self] in
+            let previousIdleSetting = UIApplication.shared.isIdleTimerDisabled
+            UIApplication.shared.isIdleTimerDisabled = true
+            defer { UIApplication.shared.isIdleTimerDisabled = previousIdleSetting }
             let current = await provider.capability(for: localeID)
             capability = current
             guard current.readiness == .ready else { throw TranscriptionError.unavailable(current.message) }

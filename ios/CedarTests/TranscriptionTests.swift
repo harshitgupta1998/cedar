@@ -1,5 +1,6 @@
 import AVFoundation
 import Combine
+import UIKit
 import XCTest
 @testable import Cedar
 
@@ -12,6 +13,7 @@ private final class TestSpeechProvider: TranscriptionProvider {
     var maxDuration: TimeInterval?
     var delay: Duration?
     var ignoreCancellation = false
+    var observedIdleTimerDisabled: Bool?
     var calls = 0
     var downloads = 0
     var cancellations = 0
@@ -23,6 +25,7 @@ private final class TestSpeechProvider: TranscriptionProvider {
     func downloadModel(for capability: SpeechCapability) async throws { downloads += 1; readiness = .ready }
     func transcribe(url: URL, capability: SpeechCapability, progress: @escaping @MainActor (TimeInterval) -> Void) async throws -> [TranscriptSegment] {
         calls += 1
+        observedIdleTimerDisabled = UIApplication.shared.isIdleTimerDisabled
         if let delay {
             if ignoreCancellation { try? await Task.sleep(for: delay) }
             else { try await Task.sleep(for: delay) }
@@ -129,7 +132,10 @@ final class TranscriptionTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: root) }
         let provider = TestSpeechProvider()
         let controller = TranscriptionController(store: store, provider: provider)
+        let previousIdle = UIApplication.shared.isIdleTimerDisabled
         await runAndWait(controller) { controller.transcribe(item, localeID: "en-US") }
+        XCTAssertEqual(provider.observedIdleTimerDisabled, true)
+        XCTAssertEqual(UIApplication.shared.isIdleTimerDisabled, previousIdle)
         XCTAssertNil(controller.errorMessage)
         XCTAssertEqual(try store.loadTranscript(for: item.id)?.text, "Test words")
         XCTAssertEqual(controller.processedThrough, 0.8)
@@ -149,6 +155,7 @@ final class TranscriptionTests: XCTestCase {
         let observation = controller.$activeRecordingID.sink { id in
             if id != nil { started = true } else if started { finished.fulfill() }
         }
+        let previousIdle = UIApplication.shared.isIdleTimerDisabled
         controller.transcribe(item, localeID: "en-US")
         await Task.yield()
         controller.cancel(for: item.id)
@@ -157,6 +164,7 @@ final class TranscriptionTests: XCTestCase {
         XCTAssertEqual(try store.loadTranscript(for: item.id), previous)
         XCTAssertNil(controller.errorMessage)
         XCTAssertTrue(controller.phase.hasPrefix("Cancelled"))
+        XCTAssertEqual(UIApplication.shared.isIdleTimerDisabled, previousIdle)
     }
 
     @MainActor

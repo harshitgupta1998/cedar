@@ -1,0 +1,17 @@
+{
+  "containsEarlyFact" : true,
+  "containsFinalFact" : true,
+  "containsMiddleFact" : true,
+  "environment" : "macOS \/ Metal \/ llama.cpp b9000; synthetic text, not a recording",
+  "equivalentMinutesAt150WordsPerMinute" : 60.94,
+  "missingFacts" : [
+    "pending"
+  ],
+  "modelID" : "Qwen3-0.6B-Q4_K_M",
+  "output" : "Section 1 of 14\nMaya will test the recording on Monday. No additional owners, deadlines, or tasks were assigned during the meeting. Participants checked the existing notes against the source and agreed that accuracy matters.\n\nSection 2 of 14\nMaya will test recording on Monday. Jordan will check summary accuracy on Tuesday. The app name stays Cedar.\n\nSection 3 of 14\nJordan will check summary accuracy on Tuesday. The app name stays Cedar. Priya will review the demo on Wednesday. No replacement recorder was approved.\n\nSection 4 of 14\nThe discussion confirmed no additional owners, deadlines, or tasks were assigned. Participants reviewed the notes and agreed that accuracy matters. No new decisions were made during the meeting.\n\nSection 5 of 14\nThe discussion confirmed the same facts without adding new decisions. Participants reviewed notes and agreed on accuracy. No owners, deadlines, or tasks were assigned. The final approved budget is $350. Priya will review the demo on Wednesday. Lee will send invitations on Thursday.\n\nSection 6 of 14\nLee will send invitations on Thursday. The final approved budget is 350 dollars. Riya will export only text notes on Saturday. Audio must stay on the phone.\n\nSection 7 of 14\nParticipants reviewed the existing notes and agreed on accuracy. No additional owners, deadlines, or tasks were assigned during the meeting. The discussion confirmed the same facts without introducing new decisions.\n\nSection 8 of 14\nRiya will export only text notes on Saturday. Audio must stay on the phone. Noor will review microphone permissions on Tuesday. The appointment is at 3 pm, not 2 pm.\n\nSection 9 of 14\nThe discussion confirmed that accuracy matters without adding new decisions. Participants reviewed notes and agreed on accuracy. No owners, deadlines, or tasks were assigned. The meeting reviewed the topic carefully. No additional owners, deadlines, or tasks were assigned during the discussion.\n\nSection 10 of 14\nThe discussion confirmed no additional owners, deadlines, or tasks were assigned. Participants reviewed the notes and agreed that accuracy matters. No new decisions were made during the meeting.\n\nSection 11 of 14\nThe discussion confirmed that accuracy matters and agreed to review the proposal. No additional owners, deadlines, or tasks were assigned. Sam might review the proposal if approved, and Alex already sent the invoice. No further client email is required. The meeting reviewed the topic carefully.\n\nSection 12 of 14\nAlex already sent the invoice. Zoe will review transcripts on Friday. Spanish support has no owner or deadline.\n\nSection 13 of 14\nParticipants reviewed the existing notes and agreed on accuracy. No additional owners, deadlines, or tasks were assigned during the meeting. The discussion confirmed the same facts without introducing new decisions.\n\nSection 14 of 14\nZoe will review transcripts on Friday. Spanish support has no owner or deadline.",
+  "peakResidentMiB" : 1022.625,
+  "promptVersion" : "sections-v4\/non-thinking",
+  "seconds" : 8.41153597831726,
+  "sections" : 14,
+  "sourceWords" : 9141
+}

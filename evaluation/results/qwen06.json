@@ -1,0 +1,87 @@
+{
+  "cases" : [
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "decisions-and-owners",
+      "missingGroups" : [
+
+      ],
+      "output" : "We rejected automatic uploads, with Maya testing recording on Friday and Jordan reviewing summary accuracy on Monday.",
+      "seconds" : 0.6914370059967041
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "unassigned-task",
+      "missingGroups" : [
+
+      ],
+      "output" : "We discussed improving search. No owner was assigned and no deadline was agreed. This is an idea to revisit, not an approved task.",
+      "seconds" : 0.5498180389404297
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "corrected-numbers",
+      "missingGroups" : [
+
+      ],
+      "output" : "The final approved budget is $350, and the launch was moved from Tuesday to Thursday.",
+      "seconds" : 0.533282995223999
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "negated-action",
+      "missingGroups" : [
+
+      ],
+      "output" : "Maya will not email the client. Jordan already sent the invoice. No further action is required.",
+      "seconds" : 0.5120809078216553
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "conditional-task",
+      "missingGroups" : [
+
+      ],
+      "output" : "The proposal is pending approval. Sam might review the draft. No work has been assigned yet.",
+      "seconds" : 0.511260986328125
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "quoted-instruction",
+      "missingGroups" : [
+
+      ],
+      "output" : "The meeting was scheduled for Tuesday at noon, with the decision to hold it as stated in the transcript.",
+      "seconds" : 0.5221209526062012
+    },
+    {
+      "forbiddenMatches" : [
+
+      ],
+      "id" : "short-note",
+      "missingGroups" : [
+
+      ],
+      "output" : "Remember to buy milk.",
+      "seconds" : 0.42827796936035156
+    }
+  ],
+  "environment" : "macOS \/ Metal \/ llama.cpp b9000",
+  "modelID" : "Qwen3-0.6B-Q4_K_M",
+  "passedCases" : 7,
+  "peakResidentMiB" : 1025.3125,
+  "promptVersion" : "sections-v4\/non-thinking",
+  "totalCases" : 7
+}

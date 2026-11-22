@@ -30,13 +30,12 @@ struct EvaluateNotes {
 
     static func main() async throws {
         guard CommandLine.arguments.count == 5 else {
-            print("Usage: evaluate-notes fixtures.json model.gguf results.json smol360|qwen17")
+            print("Usage: evaluate-notes fixtures.json model.gguf results.json qwen06")
             exit(2)
         }
         let model: NotesModel
         switch CommandLine.arguments[4] {
-        case "smol360": model = .smol360
-        case "qwen17": model = .qwen17
+        case "qwen06": model = .qwen06
         default: print("Unknown model"); exit(2)
         }
         let fixtures = try JSONDecoder().decode([Fixture].self, from: Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1])))

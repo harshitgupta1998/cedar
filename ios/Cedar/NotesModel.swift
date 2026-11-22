@@ -2,50 +2,45 @@ import CryptoKit
 import Foundation
 
 enum NotesModel: String, CaseIterable, Identifiable, Codable, Sendable {
-    case smol360 = "SmolLM2-360M-Instruct-Q4_K_M"
-
-    case qwen17 = "Qwen3-1.7B-Q4_K_M"
+    case qwen06 = "Qwen3-0.6B-Q4_K_M"
 
     var id: String { rawValue }
-    var name: String {
-        switch self {
-        case .smol360: return "SmolLM2 360M"
-        case .qwen17: return "Qwen3 1.7B"
-        }
-    }
-    var downloadSize: String { self == .smol360 ? "271 MB" : "1.11 GB" }
-    var bytes: Int64 {
-        switch self {
-        case .smol360: return 270_590_560
-        case .qwen17: return 1_107_409_472
-        }
-    }
-    var sha256: String {
-        switch self {
-        case .smol360: return "16c7f1667fea34bacad196a57b548effcb37614db4ab5677a20c8c7b823b9e63"
-        case .qwen17: return "b139949c5bd74937ad8ed8c8cf3d9ffb1e99c866c823204dc42c0d91fa181897"
-        }
-    }
+    var name: String { "Qwen3 0.6B" }
+    var downloadSize: String { "397 MB" }
+    var bytes: Int64 { 396_705_472 }
+    var sha256: String { "ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a" }
     var url: URL {
-        switch self {
-        case .smol360:
-            return URL(string: "https://huggingface.co/unsloth/SmolLM2-360M-Instruct-GGUF/resolve/391ed11137586e383b1be0fab9acf01d282c2e11/SmolLM2-360M-Instruct-Q4_K_M.gguf")!
-        case .qwen17:
-            return URL(string: "https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/d7f544eead698dbd1f15126ef60b45a1e1933222/Qwen3-1.7B-Q4_K_M.gguf")!
+        URL(string: "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/50968a4468ef4233ed78cd7c3de230dd1d61a56b/Qwen3-0.6B-Q4_K_M.gguf")!
+    }
+    var contextTokens: UInt32 { 1_536 }
+    var inputTokens: Int32 { 1_000 }
+    var memoryHeadroom: UInt64 { 384_000_000 }
+    var promptVersion: String { "sections-v4/non-thinking" }
 
+    static func displayName(for id: String) -> String {
+        switch id {
+        case "SmolLM2-360M-Instruct-Q4_K_M": return "SmolLM2 360M (previous model)"
+        case "Qwen3-1.7B-Q4_K_M": return "Qwen3 1.7B (previous model)"
+        default: return Self(rawValue: id)?.name ?? id
         }
     }
-    var contextTokens: UInt32 { self == .smol360 ? 4_096 : 2_048 }
-    var inputTokens: Int32 { self == .smol360 ? 3_500 : 1_600 }
-    var memoryHeadroom: UInt64 { self == .smol360 ? 256_000_000 : 512_000_000 }
-    var promptVersion: String { self == .smol360 ? "faithful-v2" : "faithful-v3/non-thinking" }
+
+    /// Only retired weights are removed. Audio, transcripts, notes and unrelated files are untouched.
+    static func removeRetiredModels(in directory: URL = directory) throws {
+        for name in ["SmolLM2-360M-Q4_K_M.gguf", "Qwen3-1.7B-Q4_K_M.gguf"] {
+            let file = directory.appendingPathComponent(name)
+            if FileManager.default.fileExists(atPath: file.path) {
+                try FileManager.default.removeItem(at: file)
+            }
+        }
+    }
 
     static var directory: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("CedarModels", isDirectory: true)
     }
     var installedURL: URL {
-        let filename = self == .smol360 ? "SmolLM2-360M-Q4_K_M.gguf" : "\(rawValue).gguf"
+        let filename = "\(rawValue).gguf"
         return Self.directory.appendingPathComponent(filename)
     }
     func verify(at url: URL) throws {
