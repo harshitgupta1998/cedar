@@ -18,6 +18,9 @@ struct TranscriptView: View {
 
     var body: some View {
         List {
+            if let recovery = store.recoveryNotice {
+                Section { Label(recovery, systemImage: "arrow.clockwise.circle").font(.footnote) }
+            }
             Section {
                 Text("Turn your recording into words.")
                     .font(.system(.title2, design: .serif))
@@ -51,7 +54,7 @@ struct TranscriptView: View {
                         Button(transcript == nil ? "Transcribe recording" : "Transcribe again") {
                             if transcript == nil { begin() } else { showReplace = true }
                         }
-                        .disabled(controller.isBusy || notes.isBusy || audio.recordingID != nil)
+                        .disabled(controller.isBusy || notes.activeRecordingID != nil || audio.recordingID != nil)
                         .accessibilityIdentifier("transcript.start")
                     }
                 }

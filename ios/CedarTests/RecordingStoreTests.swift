@@ -73,6 +73,7 @@ final class RecordingStoreTests: XCTestCase {
         try invalid.write(to: store.audioURL(for: item.id))
         let reopened = RecordingStore(root: location)
         XCTAssertEqual(reopened.recordings[0].status, .needsRecovery)
+        XCTAssertThrowsError(try reopened.retryRecovery(for: item.id))
         XCTAssertEqual(try Data(contentsOf: reopened.audioURL(for: item.id)), invalid)
     }
 
@@ -87,7 +88,8 @@ final class RecordingStoreTests: XCTestCase {
         let original = try Data(contentsOf: audio)
         try Data("invalid json".utf8).write(to: audio.deletingLastPathComponent().appendingPathComponent("manifest.json"))
         let reopened = RecordingStore(root: location)
-        XCTAssertNotNil(reopened.loadError)
+        XCTAssertNotNil(reopened.recoveryNotice)
+        XCTAssertEqual(reopened.recordings.first?.status, .recovered)
         XCTAssertEqual(try Data(contentsOf: audio), original)
     }
 
@@ -125,6 +127,93 @@ final class RecordingStoreTests: XCTestCase {
         XCTAssertNil(reopened.loadError)
         XCTAssertEqual(reopened.recordings[0].status, .recovered)
         XCTAssertEqual(try Data(contentsOf: audio), original)
+    }
+
+    @MainActor
+    func testBackupManifestRestoresTitleAndPreservesDamagedMetadata() throws {
+        let location = root()
+        defer { try? FileManager.default.removeItem(at: location) }
+        let store = RecordingStore(root: location)
+        let item = try store.create()
+        let audio = store.audioURL(for: item.id)
+        try writeAudio(to: audio)
+        try store.finish(id: item.id, duration: 1, status: .saved)
+        try store.rename(store.recordings[0], to: "Known title")
+        try store.rename(store.recordings[0], to: "Newest title")
+        let folder = audio.deletingLastPathComponent()
+        let damaged = Data("damaged metadata".utf8)
+        try damaged.write(to: folder.appendingPathComponent("manifest.json"))
+        let reopened = RecordingStore(root: location)
+        XCTAssertEqual(reopened.recordings[0].title, "Known title")
+        XCTAssertEqual(reopened.recordings[0].status, .recovered)
+        let copies = try FileManager.default.contentsOfDirectory(at: folder.appendingPathComponent("Recovery"), includingPropertiesForKeys: nil)
+        XCTAssertEqual(try Data(contentsOf: XCTUnwrap(copies.first)), damaged)
+    }
+
+    @MainActor
+    func testOrphanAudioIsVisibleEvenWhenRepairCannotBeWritten() throws {
+        let location = root()
+        defer { try? FileManager.default.removeItem(at: location) }
+        let folder = location.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let audio = folder.appendingPathComponent("audio.caf")
+        try writeAudio(to: audio)
+        let original = try Data(contentsOf: audio)
+        // A directory at the manifest path prevents metadata repair, but must not hide playable audio.
+        try FileManager.default.createDirectory(at: folder.appendingPathComponent("manifest.json"), withIntermediateDirectories: false)
+        let store = RecordingStore(root: location)
+        XCTAssertEqual(store.recordings.count, 1)
+        XCTAssertNotNil(store.loadError)
+        XCTAssertEqual(try Data(contentsOf: audio), original)
+        try FileManager.default.removeItem(at: folder.appendingPathComponent("manifest.json"))
+        try store.retryRecovery(for: store.recordings[0].id)
+        XCTAssertNil(store.loadError)
+        XCTAssertEqual(store.recordings[0].status, .recovered)
+        XCTAssertEqual(RecordingStore(root: location).recordings.count, 1)
+    }
+
+    @MainActor
+    func testRecoveryAndStaleDeleteCannotChangeActiveCapture() throws {
+        let location = root()
+        defer { try? FileManager.default.removeItem(at: location) }
+        let store = RecordingStore(root: location)
+        let item = try store.create()
+        try writeAudio(to: store.audioURL(for: item.id))
+        store.reload(recoverUnfinished: true)
+        XCTAssertEqual(store.recordings[0].status, .recording)
+        XCTAssertThrowsError(try store.retryRecovery(for: item.id))
+        var stale = item
+        stale.status = .saved
+        XCTAssertThrowsError(try store.moveToRecentlyDeleted(stale))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: store.audioURL(for: item.id).path))
+    }
+
+    @MainActor
+    func testCorruptTextFilesRecoverLatestValidRevisions() throws {
+        let location = root()
+        defer { try? FileManager.default.removeItem(at: location) }
+        let store = RecordingStore(root: location)
+        let item = try store.create()
+        try writeAudio(to: store.audioURL(for: item.id))
+        try store.finish(id: item.id, duration: 1, status: .saved)
+        var transcript = Transcript(recordingID: item.id, localeID: "en-US", provider: "test",
+                                    segments: [TranscriptSegment(startMS: 0, endMS: 900, text: "First text")])
+        transcript = try store.saveTranscript(transcript)
+        let first = transcript
+        transcript.segments[0].text = "Second text"
+        _ = try store.saveTranscript(transcript)
+        let folder = store.audioURL(for: item.id).deletingLastPathComponent()
+        try Data("bad transcript".utf8).write(to: folder.appendingPathComponent("transcript.json"))
+        XCTAssertEqual(try store.loadTranscript(for: item.id), first)
+        let notes = LocalNotes(recordingID: item.id, transcriptRevision: first.revision,
+                               transcriptFingerprint: LocalNotes.fingerprint(first), modelID: "test",
+                               createdAt: Date(), processingSeconds: 1, text: "Original notes")
+        try store.saveNotes(notes)
+        try store.saveNotes(notes)
+        try Data("bad notes".utf8).write(to: folder.appendingPathComponent("notes.json"))
+        XCTAssertEqual(try store.loadNotes(for: item.id), notes)
+        XCTAssertNotNil(store.recoveryNotice)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: folder.appendingPathComponent("Recovery").path).count, 2)
     }
 
 }

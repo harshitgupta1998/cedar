@@ -189,4 +189,65 @@ final class CedarUITests: XCTestCase {
         XCTAssertFalse(app.alerts.firstMatch.exists)
     }
 
+    @MainActor
+    func testNotesEditPersistsAcrossRelaunchAndPreviousVersionRestores() {
+        app.launchArguments.append("--notes-fixture")
+        openLibrary()
+        let row = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch
+        row.tap()
+        app.buttons["recording.transcript"].tap()
+        XCTAssertTrue(app.buttons["transcript.notes"].waitForExistence(timeout: 10))
+        app.buttons["transcript.notes"].tap()
+        let controls = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        controls.name = "Notes controls"
+        controls.lifetime = .keepAlways
+        add(controls)
+        let edit = app.buttons["notes.edit"]
+        for _ in 0..<3 where !edit.isHittable { app.swipeUp() }
+        XCTAssertTrue(edit.waitForExistence(timeout: 5))
+        edit.tap()
+        let field = app.textViews["notes.editField"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText(" corrected")
+        app.buttons["notes.save"].tap()
+        app.terminate()
+        openLibrary()
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch.tap()
+        app.buttons["recording.transcript"].tap()
+        XCTAssertTrue(app.buttons["transcript.notes"].waitForExistence(timeout: 10))
+        app.buttons["transcript.notes"].tap()
+        let text = app.staticTexts["notes.text"]
+        for _ in 0..<3 where !text.isHittable { app.swipeUp() }
+        XCTAssertTrue(text.label.contains("corrected"))
+        let history = app.buttons["notes.history"]
+        for _ in 0..<3 where !history.isHittable { app.swipeUp() }
+        history.tap()
+        let restore = app.buttons["notes.restore"].firstMatch
+        XCTAssertTrue(restore.waitForExistence(timeout: 5))
+        restore.tap()
+        XCTAssertTrue(app.staticTexts["notes.text"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["notes.text"].label, "Original notes")
+        let restored = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        restored.name = "Restored notes"
+        restored.lifetime = .keepAlways
+        add(restored)
+        let copy = app.buttons["notes.copy"]
+        for _ in 0..<3 where !copy.isHittable { app.swipeUp() }
+        copy.tap()
+        XCTAssertTrue(copy.label.contains("Copied"))
+        let share = app.buttons["notes.share"]
+        for _ in 0..<3 where !share.isHittable { app.swipeUp() }
+        share.tap()
+        XCTAssertTrue(app.otherElements["ActivityListView"].waitForExistence(timeout: 5), app.debugDescription)
+        XCTAssertTrue(app.cells["Save to Files"].exists, app.debugDescription)
+        let sharing = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        sharing.name = "Share notes"
+        sharing.lifetime = .keepAlways
+        add(sharing)
+        app.otherElements["PopoverDismissRegion"].tap()
+        XCTAssertTrue(app.buttons["notes.edit"].waitForExistence(timeout: 5))
+
+    }
+
 }

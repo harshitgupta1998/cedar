@@ -1,19 +1,27 @@
 import Combine
-import CryptoKit
 import Foundation
 
 @MainActor
 final class NotesController: ObservableObject {
-    nonisolated static let modelBytes: Int64 = 270_590_560
-    nonisolated static let modelSHA256 = "16c7f1667fea34bacad196a57b548effcb37614db4ab5677a20c8c7b823b9e63"
-    static let modelURL = URL(string: "https://huggingface.co/unsloth/SmolLM2-360M-Instruct-GGUF/resolve/391ed11137586e383b1be0fab9acf01d282c2e11/SmolLM2-360M-Instruct-Q4_K_M.gguf")!
-    static var modelDirectory: URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("CedarModels", isDirectory: true)
+    static var installedModelURL: URL { NotesModel.smol360.installedURL }
+    @Published var selectedModel: NotesModel {
+        didSet { UserDefaults.standard.set(selectedModel.rawValue, forKey: "notes.model") }
     }
-    static var installedModelURL: URL { modelDirectory.appendingPathComponent("SmolLM2-360M-Q4_K_M.gguf") }
+    @Published private(set) var installedModels: Set<NotesModel>
+    @Published private(set) var downloadProgress: Double?
+    @Published private(set) var startedAt: Date?
+    var modelReady: Bool { installedModels.contains(selectedModel) }
 
-    @Published private(set) var modelReady = FileManager.default.fileExists(atPath: installedModelURL.path)
+    init() {
+        selectedModel = NotesModel(rawValue: UserDefaults.standard.string(forKey: "notes.model") ?? "") ?? .smol360
+        installedModels = Set(NotesModel.allCases.filter { FileManager.default.fileExists(atPath: $0.installedURL.path) })
+        // A terminated download may leave a verified-but-uncommitted staging file.
+        let staging = (try? FileManager.default.contentsOfDirectory(at: NotesModel.directory, includingPropertiesForKeys: nil)) ?? []
+        for file in staging where file.lastPathComponent.hasPrefix("download-") && file.pathExtension == "partial" {
+            try? FileManager.default.removeItem(at: file)
+        }
+    }
+
     @Published private(set) var isBusy = false
     @Published private(set) var activeRecordingID: UUID?
     @Published private(set) var lastRecordingID: UUID?
@@ -23,17 +31,7 @@ final class NotesController: ObservableObject {
     private var job: Task<Void, Never>?
 
     nonisolated static func verifyModel(at url: URL) throws {
-        let file = try FileHandle(forReadingFrom: url)
-        defer { try? file.close() }
-        var hash = SHA256()
-        var bytes: Int64 = 0
-        while let data = try file.read(upToCount: 1_048_576), !data.isEmpty {
-            try Task.checkCancellation()
-            bytes += Int64(data.count)
-            hash.update(data: data)
-        }
-        let digest = hash.finalize().map { String(format: "%02x", $0) }.joined()
-        guard bytes == modelBytes, digest == modelSHA256 else { throw NotesError.invalidModel }
+        try NotesModel.smol360.verify(at: url)
     }
 
     func download() {
@@ -41,40 +39,51 @@ final class NotesController: ObservableObject {
         isBusy = true
         lastRecordingID = nil
         errorMessage = nil
-        phase = "Downloading 271 MB model…"
+        let model = selectedModel
+        phase = "Downloading \(model.name)…"
+        downloadProgress = 0
         job = Task {
-            let staging = Self.modelDirectory.appendingPathComponent("download-\(UUID().uuidString).partial")
+            let staging = NotesModel.directory.appendingPathComponent("download-\(UUID().uuidString).partial")
             defer {
                 try? FileManager.default.removeItem(at: staging)
                 isBusy = false
                 job = nil
+                downloadProgress = nil
             }
             do {
-                try FileManager.default.createDirectory(at: Self.modelDirectory, withIntermediateDirectories: true)
-                let available = try Self.modelDirectory.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
+                try FileManager.default.createDirectory(at: NotesModel.directory, withIntermediateDirectories: true)
+                let available = try NotesModel.directory.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
                     .volumeAvailableCapacityForImportantUsage
-                if let available, available < Self.modelBytes * 2 { throw RecordingStore.StoreError.lowStorage }
-                let (temporary, response) = try await URLSession.shared.download(from: Self.modelURL)
-                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+                if let available, available < model.bytes + 50_000_000 {
+                    throw NotesError.downloadStorage(ByteCountFormatter.string(fromByteCount: model.bytes + 50_000_000, countStyle: .decimal))
+                }
+                var modelFolder = NotesModel.directory
+                var folderValues = URLResourceValues()
+                folderValues.isExcludedFromBackup = true
+                try modelFolder.setResourceValues(folderValues)
+                let download = ModelDownload(destination: staging) { [weak self] fraction in
+                    self?.downloadProgress = fraction
+                }
+                try await download.run(url: model.url)
                 try Task.checkCancellation()
-                try FileManager.default.moveItem(at: temporary, to: staging)
                 phase = "Verifying model…"
-                let verification = Task.detached { try Self.verifyModel(at: staging) }
+                downloadProgress = nil
+                let verification = Task.detached { try model.verify(at: staging) }
                 try await withTaskCancellationHandler {
                     try await verification.value
                 } onCancel: { verification.cancel() }
                 try Task.checkCancellation()
                 // The previous verified model remains until its replacement is complete.
-                if FileManager.default.fileExists(atPath: Self.installedModelURL.path) {
-                    _ = try FileManager.default.replaceItemAt(Self.installedModelURL, withItemAt: staging)
+                if FileManager.default.fileExists(atPath: model.installedURL.path) {
+                    _ = try FileManager.default.replaceItemAt(model.installedURL, withItemAt: staging)
                 } else {
-                    try FileManager.default.moveItem(at: staging, to: Self.installedModelURL)
+                    try FileManager.default.moveItem(at: staging, to: model.installedURL)
                 }
-                var modelFile = Self.installedModelURL
+                var modelFile = model.installedURL
                 var values = URLResourceValues()
                 values.isExcludedFromBackup = true
                 try modelFile.setResourceValues(values)
-                modelReady = true
+                installedModels.insert(model)
                 phase = "Model ready for offline notes."
             } catch {
                 phase = ""
@@ -85,11 +94,12 @@ final class NotesController: ObservableObject {
 
     func removeModel() {
         guard !isBusy else { return }
+        let model = selectedModel
         do {
-            if FileManager.default.fileExists(atPath: Self.installedModelURL.path) {
-                try FileManager.default.removeItem(at: Self.installedModelURL)
+            if FileManager.default.fileExists(atPath: model.installedURL.path) {
+                try FileManager.default.removeItem(at: model.installedURL)
             }
-            modelReady = false
+            installedModels.remove(model)
             phase = ""
             errorMessage = nil
         } catch { errorMessage = error.localizedDescription }
@@ -100,13 +110,15 @@ final class NotesController: ObservableObject {
         isBusy = true
         activeRecordingID = transcript.recordingID
         lastRecordingID = transcript.recordingID
-        phase = "Generating notes on this iPhone…"
+        let model = selectedModel
+        phase = "Generating notes with \(model.name)…"
+        startedAt = Date()
         errorMessage = nil
         job = Task {
-            defer { isBusy = false; activeRecordingID = nil; job = nil }
+            defer { isBusy = false; activeRecordingID = nil; job = nil; startedAt = nil }
             do {
                 let start = ContinuousClock.now
-                let output = try await engine.summarize(transcript.text, modelURL: Self.installedModelURL)
+                let output = try await engine.summarize(transcript.text, modelURL: model.installedURL, model: model)
                 try Task.checkCancellation()
                 guard let current = try store.loadTranscript(for: transcript.recordingID),
                       LocalNotes.fingerprint(current) == LocalNotes.fingerprint(transcript)
@@ -114,8 +126,8 @@ final class NotesController: ObservableObject {
                 let elapsed = start.duration(to: .now)
                 let seconds = Double(elapsed.components.seconds) + Double(elapsed.components.attoseconds) / 1e18
                 let notes = LocalNotes(recordingID: transcript.recordingID, transcriptRevision: transcript.revision,
-                                       transcriptFingerprint: LocalNotes.fingerprint(transcript), modelID: LocalNotesEngine.modelID,
-                                       createdAt: Date(), processingSeconds: seconds, text: output)
+                                       transcriptFingerprint: LocalNotes.fingerprint(transcript), modelID: model.rawValue,
+                                       createdAt: Date(), processingSeconds: seconds, text: output, promptVersion: model.promptVersion)
                 try store.saveNotes(notes)
                 phase = "Notes saved on this iPhone."
             } catch {

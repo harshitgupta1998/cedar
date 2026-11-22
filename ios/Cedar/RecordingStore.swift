@@ -1,6 +1,11 @@
 import AVFoundation
 import Foundation
 
+struct NotesRevision: Identifiable {
+    let id: UUID
+    let notes: LocalNotes
+}
+
 struct Recording: Codable, Identifiable, Equatable {
     enum Status: String, Codable {
         case recording, saved, interrupted, recovered, needsRecovery
@@ -41,6 +46,8 @@ final class RecordingStore: ObservableObject {
     @Published private(set) var loadError: String?
     @Published private(set) var transcriptUpdates = 0
     @Published private(set) var notesUpdates = 0
+    @Published private(set) var recoveryNotice: String?
+    private var activeRecordings = Set<UUID>()
     let root: URL
     private let files = FileManager.default
 
@@ -78,35 +85,117 @@ final class RecordingStore: ObservableObject {
         }
     }
 
+    private func decodeRecording(_ data: Data, id: UUID) throws -> Recording {
+        let item = try JSONDecoder().decode(Recording.self, from: data)
+        guard item.id == id, item.formatVersion == 1, item.duration.isFinite, item.duration >= 0,
+              item.createdAt.timeIntervalSinceReferenceDate.isFinite else { throw StoreError.invalidManifest }
+        return item
+    }
+
     private func write(_ recording: Recording, deleted: Bool = false) throws {
+        let folder = directory(recording.id, deleted: deleted)
+        let manifest = folder.appendingPathComponent("manifest.json")
         let data = try JSONEncoder().encode(recording)
-        try data.write(to: directory(recording.id, deleted: deleted).appendingPathComponent("manifest.json"),
-                       options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        if let previous = try? Data(contentsOf: manifest),
+           (try? decodeRecording(previous, id: recording.id)) != nil {
+            try previous.write(to: folder.appendingPathComponent("manifest-backup.json"),
+                               options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        }
+        try data.write(to: manifest, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    }
+
+    private func preserveDamagedFile(_ url: URL) throws {
+        guard files.fileExists(atPath: url.path) else { return }
+        let archive = url.deletingLastPathComponent().appendingPathComponent("Recovery", isDirectory: true)
+        try files.createDirectory(at: archive, withIntermediateDirectories: true,
+                                  attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
+        try files.copyItem(at: url, to: archive.appendingPathComponent("\(UUID().uuidString)-\(url.lastPathComponent)"))
     }
 
     private func readDirectory(_ location: URL, deleted: Bool, recover: Bool) throws -> [Recording] {
         var result: [Recording] = []
-        let directories = try files.contentsOfDirectory(at: location, includingPropertiesForKeys: [.isDirectoryKey],
-                                                        options: [.skipsHiddenFiles])
-        for folder in directories {
-            guard let id = UUID(uuidString: folder.lastPathComponent) else { continue }
+        let folders = try files.contentsOfDirectory(at: location, includingPropertiesForKeys: [.isDirectoryKey],
+                                                    options: [.skipsHiddenFiles])
+        for folder in folders {
+            guard let id = UUID(uuidString: folder.lastPathComponent),
+                  (try? folder.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true else { continue }
+            let manifest = folder.appendingPathComponent("manifest.json")
+            var item: Recording
+            var damagedManifest = false
             do {
-                let manifest = folder.appendingPathComponent("manifest.json")
-                var item = try JSONDecoder().decode(Recording.self, from: Data(contentsOf: manifest))
-                guard item.id == id, item.formatVersion == 1 else { throw StoreError.invalidManifest }
-                if recover && item.status == .recording {
-                    let duration = Self.readableDuration(at: audioURL(for: id, deleted: deleted))
-                    item.duration = duration ?? item.duration
-                    item.status = duration != nil ? .recovered : .needsRecovery
-                    try write(item, deleted: deleted)
+                let data = try Data(contentsOf: manifest)
+                // Preserve unsupported future formats for a newer app to open.
+                if let future = try? JSONDecoder().decode(Recording.self, from: data), future.formatVersion != 1 {
+                    loadError = "Some recordings need a newer version of Cedar. Their files are retained."
+                    continue
                 }
-                result.append(item)
+                item = try decodeRecording(data, id: id)
             } catch {
-                // Preserve the folder and audio even if metadata cannot be decoded or updated.
-                loadError = "Some recordings could not be loaded. Their files are still on this iPhone. Try reopening Cedar."
+                damagedManifest = true
+                if let data = try? Data(contentsOf: folder.appendingPathComponent("manifest-backup.json")),
+                   let backup = try? decodeRecording(data, id: id) {
+                    item = backup
+                } else {
+                    let date = (try? folder.resourceValues(forKeys: [.creationDateKey]).creationDate) ?? Date()
+                    item = Recording(id: id, title: "Recovered recording", createdAt: date, status: .needsRecovery)
+                }
             }
+            let shouldRecover = damagedManifest || (recover && [.recording, .needsRecovery].contains(item.status))
+            if shouldRecover && !activeRecordings.contains(id) {
+                let duration = Self.readableDuration(at: audioURL(for: id, deleted: deleted))
+                item.duration = duration ?? item.duration
+                item.status = duration == nil ? .needsRecovery : .recovered
+                do {
+                    if damagedManifest { try preserveDamagedFile(manifest) }
+                    try write(item, deleted: deleted)
+                    if damagedManifest { recoveryNotice = "Recovered recording details. Review the recovered audio before relying on it." }
+                } catch {
+                    loadError = "Recovered files are visible, but Cedar couldn’t save their details. Free some storage and retry recovery."
+                }
+            }
+            result.append(item)
         }
         return result.sorted { $0.createdAt > $1.createdAt }
+    }
+
+    func retryRecovery(for id: UUID) throws {
+        guard !activeRecordings.contains(id) else { throw StoreError.stillRecording }
+        reload(recoverUnfinished: true)
+        guard let item = recordings.first(where: { $0.id == id }) else { throw StoreError.notFound }
+        if item.status == .needsRecovery { throw StoreError.unreadableAudio }
+    }
+
+    private func loadRecoverable<T: Decodable>(at url: URL, revisions: String,
+                                               validate: (T) throws -> Void, date: (T) -> Date) throws -> T? {
+        let exists = files.fileExists(atPath: url.path)
+        var originalError: Error?
+        if exists {
+            do {
+                let document = try JSONDecoder().decode(T.self, from: Data(contentsOf: url))
+                try validate(document)
+                return document
+            } catch { originalError = error }
+        }
+        let archive = url.deletingLastPathComponent().appendingPathComponent(revisions)
+        let candidates = (try? files.contentsOfDirectory(at: archive, includingPropertiesForKeys: nil)) ?? []
+        let valid: [(T, Data)] = candidates.filter { $0.pathExtension == "json" }.compactMap { candidate in
+            guard let data = try? Data(contentsOf: candidate),
+                  let document = try? JSONDecoder().decode(T.self, from: data),
+                  (try? validate(document)) != nil else { return nil }
+            return (document, data)
+        }
+        guard let latest = valid.max(by: { date($0.0) < date($1.0) }) else {
+            if let originalError { throw originalError }
+            return nil
+        }
+        recoveryNotice = "Recovered an earlier saved revision. Review the restored text before continuing."
+        do {
+            try preserveDamagedFile(url)
+            try latest.1.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        } catch {
+            loadError = "An earlier revision is available, but Cedar couldn’t save the recovery. Its original files are retained."
+        }
+        return latest.0
     }
 
     func reload(recoverUnfinished: Bool = false) {
@@ -130,11 +219,13 @@ final class RecordingStore: ObservableObject {
                                   attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
         // The manifest exists before the microphone starts writing audio.
         try write(item)
+        activeRecordings.insert(item.id)
         recordings.insert(item, at: 0)
         return item
     }
 
     func finish(id: UUID, duration: TimeInterval, status: Recording.Status) throws {
+        defer { activeRecordings.remove(id) }
         guard var item = recordings.first(where: { $0.id == id }) else { throw StoreError.notFound }
         let readable = Self.readableDuration(at: audioURL(for: id))
         item.duration = readable ?? max(0, duration)
@@ -153,7 +244,8 @@ final class RecordingStore: ObservableObject {
     }
 
     func moveToRecentlyDeleted(_ item: Recording) throws {
-        guard item.status != .recording else { throw StoreError.stillRecording }
+        guard let current = recordings.first(where: { $0.id == item.id }) else { throw StoreError.notFound }
+        guard current.status != .recording, !activeRecordings.contains(item.id) else { throw StoreError.stillRecording }
         try ensureDirectories()
         try files.moveItem(at: directory(item.id), to: directory(item.id, deleted: true))
         reload()
@@ -165,11 +257,8 @@ final class RecordingStore: ObservableObject {
     }
 
     func loadTranscript(for id: UUID) throws -> Transcript? {
-        let url = directory(id).appendingPathComponent("transcript.json")
-        guard files.fileExists(atPath: url.path) else { return nil }
-        let document = try JSONDecoder().decode(Transcript.self, from: Data(contentsOf: url))
-        try document.validate(for: id)
-        return document
+        try loadRecoverable(at: directory(id).appendingPathComponent("transcript.json"), revisions: "TranscriptRevisions",
+                            validate: { (document: Transcript) in try document.validate(for: id) }, date: { $0.updatedAt })
     }
 
     @discardableResult
@@ -196,11 +285,8 @@ final class RecordingStore: ObservableObject {
     }
 
     func loadNotes(for id: UUID) throws -> LocalNotes? {
-        let url = directory(id).appendingPathComponent("notes.json")
-        guard files.fileExists(atPath: url.path) else { return nil }
-        let notes = try JSONDecoder().decode(LocalNotes.self, from: Data(contentsOf: url))
-        try notes.validate(for: id)
-        return notes
+        try loadRecoverable(at: directory(id).appendingPathComponent("notes.json"), revisions: "NotesRevisions",
+                            validate: { (notes: LocalNotes) in try notes.validate(for: id) }, date: { $0.updatedAt ?? $0.createdAt })
     }
 
     func saveNotes(_ notes: LocalNotes) throws {
@@ -211,6 +297,43 @@ final class RecordingStore: ObservableObject {
         guard let transcript = try loadTranscript(for: item.id), notes.matches(transcript) else {
             throw NotesError.transcriptChanged
         }
+        try writeNotes(notes)
+    }
+
+    func editNotes(_ original: LocalNotes, text: String) throws {
+        guard try loadNotes(for: original.recordingID) == original else { throw NotesError.notesChanged }
+        var edited = original
+        edited.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        edited.edited = true
+        edited.updatedAt = Date()
+        try writeNotes(edited)
+    }
+
+    func notesRevisions(for id: UUID) throws -> [NotesRevision] {
+        let folder = directory(id).appendingPathComponent("NotesRevisions", isDirectory: true)
+        guard files.fileExists(atPath: folder.path) else { return [] }
+        return try files.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil).compactMap { url in
+            guard url.pathExtension == "json", let revisionID = UUID(uuidString: url.deletingPathExtension().lastPathComponent),
+                  let data = try? Data(contentsOf: url), let notes = try? JSONDecoder().decode(LocalNotes.self, from: data),
+                  (try? notes.validate(for: id)) != nil else { return nil }
+            return NotesRevision(id: revisionID, notes: notes)
+        }.sorted { ($0.notes.updatedAt ?? $0.notes.createdAt) > ($1.notes.updatedAt ?? $1.notes.createdAt) }
+    }
+
+    func restoreNotes(_ revision: NotesRevision, replacing original: LocalNotes) throws {
+        guard try loadNotes(for: original.recordingID) == original else { throw NotesError.notesChanged }
+        let url = directory(original.recordingID).appendingPathComponent("NotesRevisions/\(revision.id.uuidString).json")
+        var restored = try JSONDecoder().decode(LocalNotes.self, from: Data(contentsOf: url))
+        try restored.validate(for: original.recordingID)
+        restored.updatedAt = Date()
+        try writeNotes(restored)
+    }
+
+    private func writeNotes(_ notes: LocalNotes) throws {
+        guard let item = recordings.first(where: { $0.id == notes.recordingID }), item.status != .recording else {
+            throw StoreError.notFound
+        }
+        try notes.validate(for: item.id)
         if let previous = try loadNotes(for: item.id) {
             let archive = directory(item.id).appendingPathComponent("NotesRevisions", isDirectory: true)
             try files.createDirectory(at: archive, withIntermediateDirectories: true,
@@ -229,9 +352,10 @@ final class RecordingStore: ObservableObject {
     }
 
     enum StoreError: LocalizedError {
-        case lowStorage, notFound, invalidManifest, emptyTitle, stillRecording
+        case lowStorage, notFound, invalidManifest, emptyTitle, stillRecording, unreadableAudio
         var errorDescription: String? {
             switch self {
+            case .unreadableAudio: return "The audio still can’t be played. Cedar has kept the original file."
             case .lowStorage: return "There is not enough free space to start. Free some storage on your iPhone and try again."
             case .notFound: return "This recording could not be found."
             case .invalidManifest: return "This recording’s metadata could not be read."

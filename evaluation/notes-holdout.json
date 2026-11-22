@@ -1,0 +1,6 @@
+[
+  {"id":"owner-correction","text":"Lee first offered to run the demo. We corrected that assignment: Priya will run the demo on Wednesday. Lee will send the invitations on Tuesday.","requiredAny":[["Priya"],["Wednesday"],["Lee"],["Tuesday"]],"forbidden":["Lee will run the demo"]},
+  {"id":"time-correction","text":"The appointment was originally at 2 pm. It has now moved to 3 pm. Please use 3 pm as the confirmed appointment time.","requiredAny":[["3 pm","3pm","3:00","15:00"]],"forbidden":["confirmed appointment is at 2","confirmed appointment time is 2"]},
+  {"id":"brainstorm-only","text":"We brainstormed replacing the recorder. No replacement was approved. Keep using the current recorder. We will revisit the idea later, without a date.","requiredAny":[["no","not approved"],["current recorder","existing recorder"]],"forbidden":["replace the recorder tomorrow","The replacement was approved.","We approved a replacement"]},
+  {"id":"privacy-and-deadline","text":"Riya will export the notes on Saturday. Do not upload the audio. Only the text notes should be shared, and the audio stays on the phone.","requiredAny":[["Riya"],["Saturday"],["text","notes"],["phone","not upload","local"]],"forbidden":["upload the audio to the cloud","Riya will upload the audio"]}
+]

@@ -67,3 +67,9 @@ Version 0.2.1 (build 3) was installed on the iPhone 13 on November 9 and the ins
 ## Deferred sustained-capture check
 
 On November 9, the user chose to keep the 30-minute locked-screen test for later. This test remains unverified. Its completion is deferred while transcription capability work proceeds; it must be revisited before claiming sustained recording reliability.
+
+## Recovery follow-up — November 22, 2026
+
+Ten recording-store tests now cover ordinary persistence, unfinished capture, unreadable audio, corrupt manifest recovery, previous-manifest recovery, orphan audio visibility despite failed repair, protection of active captures against recovery/stale deletion, and recovery of corrupted text artifacts from archived revisions. The three real-audio notification-handler integration tests passed again. These test injected notifications rather than real calls or alarms.
+
+The user confirmed playback of a deliberately short 00:21 clip. The 30-minute locked-screen recording remains unverified. Broader call/alarm, low-storage and sustained-capture device checks remain open.

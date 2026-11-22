@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "forbiddenMatches": [],
+      "id": "owner-correction",
+      "missingGroups": [],
+      "output": "Lee offered to run the demo. Priya will run the demo on Wednesday. Lee will send the invitations on Tuesday.",
+      "seconds": 1.1644190549850464
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "time-correction",
+      "missingGroups": [],
+      "output": "The appointment was originally scheduled for 2 pm but has been confirmed to 3 pm. The final confirmed appointment time is 3 pm.",
+      "seconds": 1.1770529747009277
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "brainstorm-only",
+      "missingGroups": [],
+      "output": "The team decided not to replace the recorder, as no replacement was approved. The current recorder will continue to be used. A revisit to the idea of replacing the recorder will occur later, but no specific date was assigned.",
+      "seconds": 1.3534640073776245
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "privacy-and-deadline",
+      "missingGroups": [],
+      "output": "Riya will export the notes on Saturday. Do not upload the audio. Only the text notes should be shared, and the audio stays on the phone.",
+      "seconds": 1.2170909643173218
+    }
+  ],
+  "environment": "macOS / Metal / llama.cpp b9000",
+  "modelID": "Qwen3-1.7B-Q4_K_M",
+  "passedCases": 4,
+  "promptVersion": "faithful-v3/non-thinking",
+  "totalCases": 4,
+  "peakResidentMiB": 2440
+}

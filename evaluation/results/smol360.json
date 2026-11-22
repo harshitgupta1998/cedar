@@ -1,0 +1,61 @@
+{
+  "cases": [
+    {
+      "forbiddenMatches": [],
+      "id": "decisions-and-owners",
+      "missingGroups": [],
+      "output": "We rejected automatic uploads. Maya will test recording on Friday. Jordan will review summary accuracy on Monday.",
+      "seconds": 0.3835650682449341
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "unassigned-task",
+      "missingGroups": [],
+      "output": "We discussed improving search. No owner was assigned and no deadline was agreed. This is an idea to revisit, not an approved task.",
+      "seconds": 0.38298797607421875
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "corrected-numbers",
+      "missingGroups": [],
+      "output": "The first budget estimate was rejected, resulting in a final approved budget of $350. The launch was moved to Thursday, the final launch day.",
+      "seconds": 0.37676703929901123
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "negated-action",
+      "missingGroups": [],
+      "output": "Maya will not email the client. Jordan already sent the invoice yesterday. No further action is required.",
+      "seconds": 0.3199859857559204
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "conditional-task",
+      "missingGroups": [],
+      "output": "The proposal is still pending approval. If approved, Sam might review the draft. No work has been assigned to Sam yet.",
+      "seconds": 0.35182201862335205
+    },
+    {
+      "forbiddenMatches": [
+        "meeting was cancelled"
+      ],
+      "id": "quoted-instruction",
+      "missingGroups": [],
+      "output": "The meeting was cancelled. The decision was to hold the meeting on Tuesday at noon.",
+      "seconds": 0.31167399883270264
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "short-note",
+      "missingGroups": [],
+      "output": "Remember to buy milk.",
+      "seconds": 0.2503401041030884
+    }
+  ],
+  "environment": "macOS / Metal / llama.cpp b9000",
+  "modelID": "SmolLM2-360M-Instruct-Q4_K_M",
+  "passedCases": 6,
+  "promptVersion": "faithful-v2",
+  "totalCases": 7,
+  "peakResidentMiB": 743.59375
+}

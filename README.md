@@ -1,6 +1,6 @@
 # Cedar
 
-A native, local-first iPhone app for thoughts and conversations. Record conversations on your iPhone, save and play them offline, rename them, and restore items from Recently Deleted. Create timestamped on-device transcripts, edit their text, and try experimental offline summaries with SmolLM2 360M. Cloud features are future milestones.
+A native, local-first iPhone app for thoughts and conversations. Record conversations on your iPhone, save and play them offline, rename them, and restore items from Recently Deleted. Create timestamped on-device transcripts, edit their text, and generate experimental offline summaries, edit them, copy/share them, and restore earlier versions. Cloud features are future milestones.
 
 ## Run locally
 
@@ -52,15 +52,30 @@ Open a recording → **Transcript**, choose a language, and tap **Transcribe rec
 
 ## Try offline notes
 
-Open a saved transcript → **Offline notes** → **Download model · 271 MB** → **Generate notes**. The download comes from Hugging Face and is verified against a pinned SHA-256 hash. After download, inference runs locally through llama.cpp and works offline. The model can be removed from this screen. Its download is excluded from iCloud backups.
+Open a saved transcript → **Offline notes**, choose a model, download it and tap **Generate notes**. Downloads come from pinned Hugging Face revisions and are verified by file size and SHA-256 before installation and inference. Processing runs locally after download. Both models are Apache 2.0 licensed.
 
-This experiment uses **SmolLM2-360M-Instruct Q4_K_M**. Start with short English recordings around five minutes or less. The full prompt must fit within 3,500 tokens, with a 4,096-token context and up to 384 generated tokens. Longer input is rejected with a message. Duration is guidance rather than an enforced recording limit. Keep Cedar open during generation. Leaving the screen or backgrounding the app cancels generation. The model is unloaded after each request.
+| Model | Download | Input budget including instructions | Context |
+| --- | --- | --- | --- |
+| SmolLM2 360M Q4_K_M | 271 MB | 3,500 tokens | 4,096 tokens |
+| Qwen3 1.7B Q4_K_M | 1.11 GB | 1,600 tokens | 2,048 tokens |
 
-Generated notes are saved alongside the recording and survive relaunch and Recently Deleted/restore. Regeneration archives the previous notes. Editing a transcript marks its existing notes as outdated. Cancellation and failed generation preserve saved notes. Review the summary against the transcript, especially decisions, names, dates and tasks. The model is experimental and may omit or invent details.
+Qwen3 uses its published non-thinking template. Start with short English recordings around five minutes or less. Both models allow up to 384 output tokens. Longer input produces a clear error. These text budgets do not cap recording duration. The larger model trades more memory and storage for better results in the tested examples. The app checks its available memory before loading a model. A larger model may be unavailable on a device or under current memory pressure.
 
-The model weights are downloaded separately and excluded from Git. Model and runtime licenses are available in the app. Source: [Hugging Face SmolLM2](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct), [Unsloth conversion](https://huggingface.co/unsloth/SmolLM2-360M-Instruct-GGUF), [llama.cpp b9000](https://github.com/ggml-org/llama.cpp/tree/b9000).
+Downloads show progress and can be cancelled and retried. Uncommitted staging files from a terminated download are cleaned up on launch. Model files are excluded from iCloud backups and Git. The selected model can be removed from the notes screen. Keep Cedar open during generation. Leaving the screen or backgrounding the app cancels generation. The model and context are unloaded after each request.
 
-The optional real-inference integration test runs when the pinned model is installed in the test host app's `Library/Application Support/CedarModels/SmolLM2-360M-Q4_K_M.gguf`. It uses synthetic transcripts. CI skips that case when the model is absent and runs the remaining storage, integrity and speech-controller tests.
+Use **Edit notes**, **Copy notes**, **Share notes**, or **Previous versions** below the saved summary. Regeneration and edits archive the previous text. Restoring a version archives the current one first. Outdated notes retain their original transcript identity and remain labeled outdated after editing. Concurrent edits are rejected instead of overwriting newer text.
+
+Review summaries against the transcript. Small models can omit details or invent facts. The summary evaluation improved from 4/7 baseline checks to 6/7 with the revised 360M prompt; Qwen3 passed 7/7 main and 4/4 additional synthetic checks. These limited Mac results do not establish general accuracy. Outputs, limitations and reproduction steps are in [the local evaluation](evaluation/README.md).
+
+Model and runtime licenses are available in the app. Sources include [SmolLM2](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct), [Qwen3](https://huggingface.co/Qwen/Qwen3-1.7B), [the Qwen3 conversion](https://huggingface.co/unsloth/Qwen3-1.7B-GGUF), and [llama.cpp b9000](https://github.com/ggml-org/llama.cpp/tree/b9000).
+
+Optional real-inference tests run when the pinned model files are installed in the test host's `Library/Application Support/CedarModels/` directory. CI skips these two cases when the model files are absent. Local tests cover both real models, storage and recovery, editing, restoration, download progress, HTTP failure and cancellation.
+
+## Recovery
+
+Cedar retains a previous valid recording manifest. Damaged or missing metadata is reconstructed from that backup or the recording folder, so retained audio stays visible even when metadata repair cannot be written. Damaged metadata is copied into a local `Recovery` folder before replacement. Unreadable audio stays marked for recovery. Use **Retry recovery** in its recording detail screen.
+
+If saved transcript or notes JSON is damaged, Cedar tries the newest valid archived revision and shows a recovery notice. A restored revision can be older than the damaged document. Automatic recovery never resumes microphone capture. See [recording checks](docs/recording-checks.md).
 
 ## Current milestone
 
@@ -68,4 +83,4 @@ See [development status](docs/development-status.md). The welcome and short loca
 
 ## License
 
-Cedar is [MIT](LICENSE). SmolLM2 model weights are Apache 2.0 and the llama.cpp runtime is MIT. Bundled notices are in `ios/Cedar/Notices`.
+Cedar is [MIT](LICENSE). SmolLM2 and Qwen3 model weights are Apache 2.0 and the llama.cpp runtime is MIT. Bundled notices are in `ios/Cedar/Notices`.

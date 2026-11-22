@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0868C9DE88CEB2454C65434F /* ModelDownloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC928A8496F5A04391117C6 /* ModelDownloadTests.swift */; };
 		0E3B5DC812B1426C5FB14FEA /* llama.txt in Resources */ = {isa = PBXBuildFile; fileRef = A0B8AA0AC6C893F9A95160BE /* llama.txt */; };
 		12192AD6F0CE44104F091858 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE28C590DB975C293C86B3F /* WelcomeView.swift */; };
 		1898534C7300077B9A165218 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35446C7C34D81C4C8F131CDB /* NotesView.swift */; };
@@ -14,7 +15,9 @@
 		30F13C48C36FF83DEFE710D8 /* llama.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8877909D9195F47CE1E3ED1 /* llama.xcframework */; };
 		34AC73A076D15E77A849AADB /* LocalNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD374C21D756F318714E692C /* LocalNotes.swift */; };
 		3AA86E6821E3C75FFD215F81 /* llama.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D8877909D9195F47CE1E3ED1 /* llama.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3CE3A953C836326D039D4F22 /* ModelDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6E24FB13B540D1B666626B /* ModelDownload.swift */; };
 		446040E50CDBBAA323C19B5A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8505B57E67DEC6FF04182B5C /* Foundation.framework */; };
+		4C825FE62F287D11B1AC1917 /* NotesEditingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD5548243AD4CDD5425AB2E /* NotesEditingTests.swift */; };
 		506CBA72FB91DD7B3AA84414 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F57CDA7F77BBB70AA3B50C /* LibraryView.swift */; };
 		527A462A89CA15599C376F34 /* LocalNotesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 195E99C7A90D3D04451E891E /* LocalNotesTests.swift */; };
 		5EBAD305F41700FBC832E76A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E05CEAE4B9BC2CB74226FF /* Foundation.framework */; };
@@ -33,6 +36,8 @@
 		D1EF0FF014C24EA7E34F8DD9 /* Transcript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F36FCFA9711C2CC11F90D4 /* Transcript.swift */; };
 		E341AF42333AB1FA549565D4 /* CedarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F584625EE76EE94CB1808439 /* CedarUITests.swift */; };
 		E96089900B14D382EF7B4374 /* SmolLM2.txt in Resources */ = {isa = PBXBuildFile; fileRef = 157A9081F0333074F23C950F /* SmolLM2.txt */; };
+		F0FD3221E3C4054B6772E19A /* Qwen.txt in Resources */ = {isa = PBXBuildFile; fileRef = 11A1CD9B678FF4DCED5C7E60 /* Qwen.txt */; };
+		F6EF9E7927F374FD469BCF8F /* NotesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60B1D0377D5F22819AC0414 /* NotesModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +73,8 @@
 
 /* Begin PBXFileReference section */
 		0A3A30D7F21B14201A042863 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0B6E24FB13B540D1B666626B /* ModelDownload.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ModelDownload.swift; sourceTree = "<group>"; };
+		11A1CD9B678FF4DCED5C7E60 /* Qwen.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = Qwen.txt; sourceTree = "<group>"; };
 		157A9081F0333074F23C950F /* SmolLM2.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = SmolLM2.txt; sourceTree = "<group>"; };
 		195E99C7A90D3D04451E891E /* LocalNotesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalNotesTests.swift; sourceTree = "<group>"; };
 		34F31E0C120092112C453C01 /* AudioController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
@@ -80,10 +87,12 @@
 		4E94FCD87A319254CEB81E3C /* CedarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CedarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD1FFD03D1C90974A335CDC /* Cedar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cedar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66177029DAA8EA3525DB4095 /* LocalNotesEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalNotesEngine.swift; sourceTree = "<group>"; };
+		6DD5548243AD4CDD5425AB2E /* NotesEditingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotesEditingTests.swift; sourceTree = "<group>"; };
 		70C16817B516B0EC55F19491 /* TranscriptionController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TranscriptionController.swift; sourceTree = "<group>"; };
 		8505B57E67DEC6FF04182B5C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8910A1DA5E075676003576B8 /* Config.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		8D051548970154DED4A9FDBE /* TranscriptView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TranscriptView.swift; sourceTree = "<group>"; };
+		8DC928A8496F5A04391117C6 /* ModelDownloadTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ModelDownloadTests.swift; sourceTree = "<group>"; };
 		8ED16B67665D0387EB456271 /* CedarApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CedarApp.swift; sourceTree = "<group>"; };
 		A0B8AA0AC6C893F9A95160BE /* llama.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = llama.txt; sourceTree = "<group>"; };
 		BD374C21D756F318714E692C /* LocalNotes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalNotes.swift; sourceTree = "<group>"; };
@@ -95,6 +104,7 @@
 		ECE28C590DB975C293C86B3F /* WelcomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		F584625EE76EE94CB1808439 /* CedarUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CedarUITests.swift; sourceTree = "<group>"; };
 		F5F57CDA7F77BBB70AA3B50C /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		F60B1D0377D5F22819AC0414 /* NotesModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotesModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +143,8 @@
 				3A16CCE88B51DBF117862D6F /* AudioControllerTests.swift */,
 				4137E751BAD30B61DDEE3373 /* TranscriptionTests.swift */,
 				195E99C7A90D3D04451E891E /* LocalNotesTests.swift */,
+				6DD5548243AD4CDD5425AB2E /* NotesEditingTests.swift */,
+				8DC928A8496F5A04391117C6 /* ModelDownloadTests.swift */,
 			);
 			name = CedarTests;
 			path = CedarTests;
@@ -143,6 +155,7 @@
 			children = (
 				A0B8AA0AC6C893F9A95160BE /* llama.txt */,
 				157A9081F0333074F23C950F /* SmolLM2.txt */,
+				11A1CD9B678FF4DCED5C7E60 /* Qwen.txt */,
 			);
 			name = Notices;
 			path = Notices;
@@ -179,6 +192,8 @@
 				40836F7ED796A573DC70D0C9 /* NotesController.swift */,
 				35446C7C34D81C4C8F131CDB /* NotesView.swift */,
 				3EC3A203E8640C2A2EC2A629 /* Notices */,
+				F60B1D0377D5F22819AC0414 /* NotesModel.swift */,
+				0B6E24FB13B540D1B666626B /* ModelDownload.swift */,
 			);
 			path = Cedar;
 			sourceTree = "<group>";
@@ -320,6 +335,7 @@
 				A656B7B229F98D0DD593849E /* Assets.xcassets in Resources */,
 				0E3B5DC812B1426C5FB14FEA /* llama.txt in Resources */,
 				E96089900B14D382EF7B4374 /* SmolLM2.txt in Resources */,
+				F0FD3221E3C4054B6772E19A /* Qwen.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,6 +373,8 @@
 				B329485F811884A9F0DDBFF0 /* LocalNotesEngine.swift in Sources */,
 				2B62E12EB08C32486761CE80 /* NotesController.swift in Sources */,
 				1898534C7300077B9A165218 /* NotesView.swift in Sources */,
+				F6EF9E7927F374FD469BCF8F /* NotesModel.swift in Sources */,
+				3CE3A953C836326D039D4F22 /* ModelDownload.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,6 +386,8 @@
 				B2AC607BAA2BBCD9B13CDD92 /* AudioControllerTests.swift in Sources */,
 				768C0B1B606C205B5430B974 /* TranscriptionTests.swift in Sources */,
 				527A462A89CA15599C376F34 /* LocalNotesTests.swift in Sources */,
+				4C825FE62F287D11B1AC1917 /* NotesEditingTests.swift in Sources */,
+				0868C9DE88CEB2454C65434F /* ModelDownloadTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,7 +459,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Cedar/Info.plist;
@@ -452,7 +472,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.4.1;
+				MARKETING_VERSION = 0.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -619,7 +639,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Cedar/Info.plist;
@@ -632,7 +652,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.4.1;
+				MARKETING_VERSION = 0.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harshitgupta1998.cedar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

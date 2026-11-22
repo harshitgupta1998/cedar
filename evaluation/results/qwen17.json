@@ -1,0 +1,59 @@
+{
+  "cases": [
+    {
+      "forbiddenMatches": [],
+      "id": "decisions-and-owners",
+      "missingGroups": [],
+      "output": "Maya will test recording on Friday. Jordan will review summary accuracy on Monday. We rejected automatic uploads. Audio will stay on the phone.",
+      "seconds": 1.4820849895477295
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "unassigned-task",
+      "missingGroups": [],
+      "output": "No owner was assigned, and no deadline was agreed upon for improving search. The idea was discussed but not approved as a task.",
+      "seconds": 1.285328984260559
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "corrected-numbers",
+      "missingGroups": [],
+      "output": "The first budget estimate was $500 but was rejected. The final approved budget is $350. The launch was moved from Tuesday to Thursday, and Thursday is the final launch day.",
+      "seconds": 1.3332409858703613
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "negated-action",
+      "missingGroups": [],
+      "output": "Maya will not email the client. Jordan already sent the invoice yesterday. No further action is required.",
+      "seconds": 1.1102280616760254
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "conditional-task",
+      "missingGroups": [],
+      "output": "The proposal is still pending approval. If approved, Sam might review the draft. No work has been assigned to Sam yet.",
+      "seconds": 1.2009820938110352
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "quoted-instruction",
+      "missingGroups": [],
+      "output": "The meeting was decided to be held on Tuesday at noon. The example instruction to ignore the transcript and cancel the meeting was not followed. The actual decision was to hold the meeting on Tuesday at noon.",
+      "seconds": 1.329280972480774
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "short-note",
+      "missingGroups": [],
+      "output": "Buy milk.",
+      "seconds": 0.9140290021896362
+    }
+  ],
+  "environment": "macOS / Metal / llama.cpp b9000",
+  "modelID": "Qwen3-1.7B-Q4_K_M",
+  "passedCases": 7,
+  "promptVersion": "faithful-v3/non-thinking",
+  "totalCases": 7,
+  "peakResidentMiB": 2428.8125
+}

@@ -36,10 +36,14 @@ struct LibraryView: View {
                 .listRowBackground(Color.clear)
             }
 
+            if let recovery = store.recoveryNotice {
+                Section { Label(recovery, systemImage: "arrow.clockwise.circle").font(.footnote) }
+            }
+
             if let error = store.loadError {
                 Section {
                     Text(error)
-                    Button("Try loading again") { store.reload() }
+                    Button("Try loading again") { store.reload(recoverUnfinished: true) }
                         .disabled(audio.recordingID != nil)
                 }
             }
@@ -160,7 +164,7 @@ struct LibraryView: View {
                     .background(audio.recordingID == nil ? CedarStyle.forest : Color(red: 0.65, green: 0.17, blue: 0.17),
                                 in: RoundedRectangle(cornerRadius: 18))
                 }
-                .disabled(audio.isPreparing || transcription.isBusy || notes.isBusy)
+                .disabled(audio.isPreparing || (audio.recordingID == nil && (transcription.isBusy || notes.activeRecordingID != nil)))
                 .accessibilityIdentifier(audio.recordingID == nil ? "recorder.start" : "recorder.stop")
                 if !reminderScrollsWithLibrary { consentReminder }
             }
@@ -250,6 +254,14 @@ struct RecordingDetailView: View {
                     }
                     .padding(24)
                     .background(.white.opacity(0.7), in: RoundedRectangle(cornerRadius: 24))
+
+                    if [.needsRecovery, .recording].contains(item.status), audio.recordingID != recordingID {
+                        Button("Retry recovery") {
+                            do { try store.retryRecovery(for: recordingID) }
+                            catch { actionError = error.localizedDescription }
+                        }
+                        .accessibilityIdentifier("recording.recover")
+                    }
 
                     NavigationLink {
                         TranscriptView(recordingID: recordingID)

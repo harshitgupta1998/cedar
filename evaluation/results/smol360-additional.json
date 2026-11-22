@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "forbiddenMatches": [],
+      "id": "owner-correction",
+      "missingGroups": [],
+      "output": "Lee will send the invitations on Tuesday. Priya will run the demo on Wednesday.",
+      "seconds": 0.3553340435028076
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "time-correction",
+      "missingGroups": [],
+      "output": "The appointment was originally at 2 pm. It has now moved to 3 pm. Please use 3 pm as the confirmed appointment time.",
+      "seconds": 0.3750849962234497
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "brainstorm-only",
+      "missingGroups": [],
+      "output": "We brainstormed replacing the recorder. No replacement was approved. Keep using the current recorder. We will revisit the idea later, without a date.",
+      "seconds": 0.359279990196228
+    },
+    {
+      "forbiddenMatches": [],
+      "id": "privacy-and-deadline",
+      "missingGroups": [],
+      "output": "Riya will export the notes on Saturday. The text notes should not be uploaded, and the audio should remain on the phone.",
+      "seconds": 0.3476320505142212
+    }
+  ],
+  "environment": "macOS / Metal / llama.cpp b9000",
+  "modelID": "SmolLM2-360M-Instruct-Q4_K_M",
+  "passedCases": 4,
+  "promptVersion": "faithful-v2",
+  "totalCases": 4,
+  "peakResidentMiB": 743.5
+}

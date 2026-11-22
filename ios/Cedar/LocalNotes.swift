@@ -8,7 +8,12 @@ struct LocalNotes: Codable, Equatable, Sendable {
     let modelID: String
     let createdAt: Date
     let processingSeconds: Double
-    let text: String
+    var text: String
+    var edited: Bool? = nil
+    var updatedAt: Date? = nil
+    var promptVersion: String? = nil
+
+    var isEdited: Bool { edited == true }
 
     static func fingerprint(_ transcript: Transcript) -> String {
         let encoder = JSONEncoder()
@@ -30,14 +35,18 @@ struct LocalNotes: Codable, Equatable, Sendable {
 }
 
 enum NotesError: LocalizedError {
-    case modelMissing, invalidModel, loadFailed, inputTooLong, emptyResult, outputTooLong, invalidNotes, transcriptChanged
+    case modelMissing, invalidModel, loadFailed, inputTooLong, emptyResult, outputTooLong, invalidNotes, transcriptChanged, insufficientMemory, notesChanged
+    case downloadStorage(String)
 
     var errorDescription: String? {
         switch self {
-        case .modelMissing: return "Download the 271 MB notes model first."
+        case .downloadStorage(let size): return "Free at least \(size) to download this model."
+        case .notesChanged: return "These notes changed. Reopen them to use the latest saved version."
+        case .modelMissing: return "Download the selected notes model first."
         case .invalidModel: return "The model failed verification. Remove it and download it again."
+        case .insufficientMemory: return "There isn’t enough app memory for this model right now. Close other apps or select SmolLM2 360M."
         case .loadFailed: return "The local model couldn’t run. Close other apps and try again."
-        case .inputTooLong: return "This transcript exceeds the experimental model’s 3,500-token input budget. Try a shorter recording, around five minutes or less."
+        case .inputTooLong: return "This transcript is too long for the selected model. Try a shorter recording."
         case .emptyResult: return "The model produced no notes. Try again with a clearer, short English transcript."
         case .outputTooLong: return "The model didn’t finish within the output limit. Try a shorter transcript."
         case .invalidNotes: return "The notes couldn’t be saved because their contents are invalid."

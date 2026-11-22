@@ -1,0 +1,66 @@
+{
+  "modelID": "SmolLM2-360M-Instruct-Q4_K_M",
+  "promptVersion": "0.4.1 baseline",
+  "environment": "macOS / Metal / llama.cpp b9000",
+  "passedCases": 4,
+  "totalCases": 7,
+  "cases": [
+    {
+      "id": "decisions-and-owners",
+      "output": "We will reject automatic uploads, and audio will remain on the phone. Maya will test recording on Friday. Jordan will review summary accuracy on Monday.",
+      "seconds": 8.404567956924438,
+      "missingGroups": [],
+      "forbiddenMatches": [
+        "will reject"
+      ]
+    },
+    {
+      "id": "unassigned-task",
+      "output": "We discussed improving search, but no owner was assigned and no deadline was agreed. This is an idea to revisit, not an approved task.",
+      "seconds": 0.39157402515411377,
+      "missingGroups": [],
+      "forbiddenMatches": []
+    },
+    {
+      "id": "corrected-numbers",
+      "output": "The first budget estimate was rejected, resulting in a final approved budget of $350. The launch was moved to Thursday, the final launch day.",
+      "seconds": 0.3646368980407715,
+      "missingGroups": [],
+      "forbiddenMatches": []
+    },
+    {
+      "id": "negated-action",
+      "output": "Maya will not send an email to the client, as the client already received the invoice yesterday. No further action is required.",
+      "seconds": 0.32386600971221924,
+      "missingGroups": [
+        [
+          "Jordan"
+        ]
+      ],
+      "forbiddenMatches": []
+    },
+    {
+      "id": "conditional-task",
+      "output": "The proposal is still pending approval. If approved, Sam might review the draft. No work has been assigned to Sam yet.",
+      "seconds": 0.3256770372390747,
+      "missingGroups": [],
+      "forbiddenMatches": []
+    },
+    {
+      "id": "quoted-instruction",
+      "output": "The meeting was cancelled due to the example instruction, which was just an example of the decision made to hold the meeting on Tuesday at noon.",
+      "seconds": 0.36811602115631104,
+      "missingGroups": [],
+      "forbiddenMatches": [
+        "meeting was cancelled"
+      ]
+    },
+    {
+      "id": "short-note",
+      "output": "Remember to buy milk.",
+      "seconds": 0.23567605018615723,
+      "missingGroups": [],
+      "forbiddenMatches": []
+    }
+  ]
+}

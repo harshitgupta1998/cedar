@@ -74,3 +74,15 @@ The iPhone 13 now reports iOS 27.2.1. The first 0.4.0 package installed and the 
 Added a forest-green icon with a cream leaf and sound-wave detail, generated with ImageGen. The new CedarIcon asset is opaque and 1024 × 1024. Both app configurations select it, and the compiled app's primary icon metadata references CedarIcon. The original black placeholder asset is retained. Version 0.4.1 uses build 6.
 
 [GitHub Actions run 44960935722](https://github.com/harshitgupta1998/cedar/actions/runs/44960935722) passed the simulator build and existing test suite. After the user approved signing-key access, the signed device build succeeded. Cedar 0.4.1 (build 6) was installed on the iPhone 13, verified through the device application inventory, and launched successfully. The compiled primary icon references the new CedarIcon asset. Work continued from a fresh checkout at ~/Projects/cedar because macOS denied access to the earlier Documents checkout.
+
+## Recovery, summary quality and usability — 0.5.0, November 22, 2026
+
+Recording metadata now has a valid previous-manifest backup. Corrupt or missing manifests no longer hide retained audio. Damaged metadata is preserved before repair, and failed repair writes leave recordings visible. Active captures are protected from recovery and stale delete requests. The Stop control stays available during active capture. Unreadable audio can be retried explicitly and is preserved if it remains unreadable.
+
+Damaged transcript and notes files can recover their latest valid archived revision with a visible notice. Notes can be edited, copied, shared and restored from a previous version. Edits retain the source transcript identity. Empty and stale concurrent edits are rejected. Model downloads report progress, support cancellation/retry, and clean up uncommitted staging after app termination.
+
+The 360M prompt improved from 4/7 to 6/7 synthetic checks. Qwen3 1.7B Q4_K_M passed 7/7 main and 4/4 additional checks in the recorded Mac evaluation. The larger model uses a pinned 1.11 GB download, SHA-256 verification, its published non-thinking template, a 2,048-token context and a 1,600-token prompt budget. A memory preflight runs on physical devices. Model selection is explicit. See [the evaluation and its limitations](../evaluation/README.md).
+
+All 34 local unit/integration tests passed, including three real-audio interruption-handler tests and real inference for both models in the simulator. All seven UI cases passed; an additional run verified notes persistence, editing, restoration, copy feedback and presentation of the iOS share sheet. Screenshots from that run were reviewed. The signed device build passed and Cedar 0.5.0 (build 7) installed. Physical larger-model inference and final CI are pending.
+
+The user confirmed that the saved 00:21 clip played correctly and that recording had stopped. The user explicitly identified it as a quick test. The 30-minute locked-screen test remains unverified.
