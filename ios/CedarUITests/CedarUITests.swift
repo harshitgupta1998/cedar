@@ -250,4 +250,70 @@ final class CedarUITests: XCTestCase {
 
     }
 
+    @MainActor
+    func testSearchSourcePlaybackAndChecklistPersistAcrossRelaunch() {
+        app.launchArguments.append("--library-features-fixture")
+        openLibrary()
+        app.swipeDown()
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("Friday")
+        let match = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "search.match.")).firstMatch
+        XCTAssertTrue(match.waitForExistence(timeout: 5))
+        XCTAssertTrue(match.label.contains("Transcript"))
+        search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 6))
+        search.typeText("not present")
+        XCTAssertTrue(app.staticTexts.matching(identifier: "library.noSearchResults").firstMatch.waitForExistence(timeout: 5))
+        search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 11))
+        if app.buttons["Cancel"].exists { app.buttons["Cancel"].tap() }
+        let recording = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch
+        XCTAssertTrue(recording.waitForExistence(timeout: 5))
+        recording.tap()
+        app.buttons["recording.transcript"].tap()
+        XCTAssertTrue(app.buttons["transcript.notes"].waitForExistence(timeout: 10))
+        app.buttons["transcript.notes"].tap()
+        let source = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "notes.source.")).firstMatch
+        for _ in 0..<8 where !source.isHittable { app.swipeUp() }
+        XCTAssertTrue(source.isHittable)
+        XCTAssertTrue(source.label.contains("00:02"))
+        source.tap()
+        let pause = app.buttons["notes.pauseSource"]
+        XCTAssertTrue(pause.waitForExistence(timeout: 3))
+        pause.tap()
+        let add = app.buttons["notes.addAction"].firstMatch
+        for _ in 0..<5 where !add.isHittable { app.swipeUp() }
+        XCTAssertTrue(add.isHittable)
+        add.tap()
+        XCTAssertEqual(add.label, "Added to checklist")
+        let checklist = app.buttons["notes.checklist"]
+        for _ in 0..<4 where !checklist.isHittable { app.swipeUp() }
+        XCTAssertTrue(checklist.isHittable)
+        checklist.tap()
+        let toggle = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "checklist.toggle.")).firstMatch
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        XCTAssertTrue(toggle.label.contains("Complete task"))
+        toggle.tap()
+        XCTAssertTrue(toggle.label.contains("Reopen task"))
+        app.terminate()
+        openLibrary()
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch.tap()
+        app.buttons["recording.checklist"].tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        XCTAssertTrue(toggle.label.contains("Reopen task"))
+        let edit = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "checklist.edit.")).firstMatch
+        edit.tap()
+        let title = app.descendants(matching: .any).matching(identifier: "checklist.title").firstMatch
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        title.tap()
+        title.typeText(" revised ")
+        app.buttons["checklist.save"].tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        XCTAssertTrue(toggle.label.contains("revised"))
+        let image = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        image.name = "Persistent action checklist"
+        image.lifetime = .keepAlways
+        self.add(image)
+    }
+
 }

@@ -15,6 +15,8 @@ struct NotesView: View {
     @State private var showEditor = false
     @State private var showHistory = false
     @State private var copied = false
+    @State private var addedActions = Set<String>()
+    @State private var sourceExcerpts: [SourceExcerpt] = []
 
     private var generating: Bool { controller.activeRecordingID == recordingID }
     private var showsFeedback: Bool { controller.lastRecordingID == nil || controller.lastRecordingID == recordingID }
@@ -66,7 +68,7 @@ struct NotesView: View {
             if let recovery = store.recoveryNotice {
                 Section { Label(recovery, systemImage: "arrow.clockwise.circle").font(.footnote) }
             }
-            if let error = loadError ?? store.loadError ?? (showsFeedback ? controller.errorMessage : nil) {
+            if let error = loadError ?? store.loadError ?? audio.errorMessage ?? (showsFeedback ? controller.errorMessage : nil) {
                 Section("Couldn’t finish") { Text(error).accessibilityIdentifier("notes.error") }
             }
             if let notes {
@@ -99,6 +101,44 @@ struct NotesView: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
+            if let notes {
+                Section("Listen to the source") {
+                    if let transcript, notes.matches(transcript) {
+                        Text("Playback starts at the matched transcript segment, not an exact word. For repeated text, choose a timestamp.").font(.caption).foregroundStyle(.secondary)
+                        if sourceExcerpts.isEmpty { Text("No exact transcript matches found. Open Transcript to check these notes against the audio.").font(.footnote) }
+                        ForEach(sourceExcerpts) { excerpt in
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(excerpt.quote).font(.subheadline)
+                                ForEach(excerpt.locations) { match in
+                                    Button { play(match) } label: { Label("Listen from \(audioTime(Double(match.startMS) / 1000))", systemImage: "play.circle") }
+                                        .disabled(audio.recordingID != nil || transcription.isBusy || controller.isBusy)
+                                        .accessibilityIdentifier("notes.source.\(match.id)")
+                                }
+                            }.buttonStyle(.borderless).padding(.vertical, 4)
+                        }
+                        if audio.playingID == recordingID && audio.isPlaying {
+                            Button("Pause source audio") { audio.pausePlayback() }.accessibilityIdentifier("notes.pauseSource")
+                        }
+                    } else { Text("The transcript changed. Regenerate notes before using source playback.").font(.footnote) }
+                }
+                Section("Keep track of actions") {
+                    Text("Save a task explicitly to track it here. Suggested follow-up questions aren’t imported automatically.").font(.caption)
+                    ForEach(SuggestedAction.parse(notes.text)) { action in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(action.title)
+                            Button(addedActions.contains(action.id) ? "Added to checklist" : "Add to checklist") {
+                                do { _ = try store.addChecklistAction(action, notes: notes); addedActions.insert(action.id) }
+                                catch { loadError = error.localizedDescription }
+                            }
+                            .disabled(controller.isBusy || transcript.map { !notes.matches($0) } != false || addedActions.contains(action.id))
+                            .accessibilityIdentifier("notes.addAction")
+                        }
+                    }
+                    NavigationLink { ChecklistView(recordingID: recordingID) } label: { Label("Open action checklist", systemImage: "checklist") }
+                        .disabled(controller.isBusy)
+                        .accessibilityIdentifier("notes.checklist")
+                }
+            }
             Section {
                 Button("Model licenses and source") { showLicenses = true }
                 if controller.retiredModelsRemain {
@@ -129,6 +169,13 @@ struct NotesView: View {
         .sheet(isPresented: $showHistory) { if let notes { NotesHistoryView(document: notes) } }
     }
 
+    private func play(_ source: SourceLocation) {
+        guard let item = store.recordings.first(where: { $0.id == recordingID }) else { return }
+        audio.errorMessage = nil
+        if audio.playingID != recordingID || !audio.isPlaying { audio.togglePlayback(item) }
+        if audio.playingID == recordingID { audio.seek(to: Double(source.startMS) / 1000) }
+    }
+
     private func generate() {
         guard let transcript else { return }
         audio.stopPlayback()
@@ -141,6 +188,13 @@ struct NotesView: View {
             notes = try store.loadNotes(for: recordingID)
             loadError = nil
             copied = false
+            addedActions = []
+            if let notes, let transcript, notes.matches(transcript) {
+                sourceExcerpts = TranscriptSources.excerpts(in: notes.text).compactMap { quote in
+                    let matches = TranscriptSources.locations(for: quote, in: transcript)
+                    return matches.isEmpty ? nil : SourceExcerpt(quote: quote, locations: matches)
+                }
+            } else { sourceExcerpts = [] }
         } catch { loadError = error.localizedDescription }
     }
 }

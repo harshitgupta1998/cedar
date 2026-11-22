@@ -6,8 +6,8 @@ struct NotesRevision: Identifiable {
     let notes: LocalNotes
 }
 
-struct Recording: Codable, Identifiable, Equatable {
-    enum Status: String, Codable {
+struct Recording: Codable, Identifiable, Equatable, Sendable {
+    enum Status: String, Codable, Sendable {
         case recording, saved, interrupted, recovered, needsRecovery
 
         var label: String {
@@ -46,6 +46,7 @@ final class RecordingStore: ObservableObject {
     @Published private(set) var loadError: String?
     @Published private(set) var transcriptUpdates = 0
     @Published private(set) var notesUpdates = 0
+    @Published private(set) var checklistUpdates = 0
     @Published private(set) var recoveryNotice: String?
     private var activeRecordings = Set<UUID>()
     let root: URL
@@ -344,6 +345,71 @@ final class RecordingStore: ObservableObject {
         try JSONEncoder().encode(notes).write(to: directory(item.id).appendingPathComponent("notes.json"),
                                               options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
         notesUpdates += 1
+    }
+
+    func loadChecklist(for id: UUID) throws -> RecordingChecklist {
+        guard recordings.contains(where: { $0.id == id }) else { throw StoreError.notFound }
+        let url = directory(id).appendingPathComponent("checklist.json")
+        guard files.fileExists(atPath: url.path) else { return RecordingChecklist(formatVersion: 1, recordingID: id, items: []) }
+        do {
+            let document = try JSONDecoder().decode(RecordingChecklist.self, from: Data(contentsOf: url))
+            try document.validate(for: id)
+            return document
+        } catch { throw ChecklistError.unreadable }
+    }
+
+    private func writeChecklist(_ document: RecordingChecklist) throws {
+        guard recordings.contains(where: { $0.id == document.recordingID && $0.status != .recording }) else { throw StoreError.notFound }
+        try document.validate(for: document.recordingID)
+        try JSONEncoder().encode(document).write(to: directory(document.recordingID).appendingPathComponent("checklist.json"),
+                                                options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        checklistUpdates += 1
+    }
+
+    @discardableResult
+    func addChecklistAction(_ action: SuggestedAction, notes: LocalNotes) throws -> ChecklistItem {
+        guard try loadNotes(for: notes.recordingID) == notes,
+              SuggestedAction.parse(notes.text).contains(action) else { throw NotesError.notesChanged }
+        let source = try loadTranscript(for: notes.recordingID)
+        guard let source, notes.matches(source) else { throw NotesError.transcriptChanged }
+        var document = try loadChecklist(for: notes.recordingID)
+        let key = NotesSection.normalized(action.title + "|" + (action.quote ?? ""))
+        if let existing = document.items.first(where: { $0.importKey == key }) { return existing }
+        let verifiedQuote = action.quote.flatMap { TranscriptSources.locations(for: $0, in: source).isEmpty ? nil : $0 }
+        let item = ChecklistItem(id: UUID(), title: action.title, owner: action.owner, due: action.due, isComplete: false,
+                                 createdAt: Date(), sourceQuote: verifiedQuote, transcriptFingerprint: verifiedQuote == nil ? nil : notes.transcriptFingerprint, importKey: key)
+        document.items.append(item)
+        try writeChecklist(document)
+        return item
+    }
+
+    func setChecklistComplete(_ item: ChecklistItem, recordingID: UUID, complete: Bool) throws {
+        var document = try loadChecklist(for: recordingID)
+        guard let index = document.items.firstIndex(where: { $0.id == item.id }) else { throw ChecklistError.changed }
+        document.items[index].isComplete = complete
+        try writeChecklist(document)
+    }
+
+    func saveChecklistTask(recordingID: UUID, original: ChecklistItem?, title: String, owner: String, due: String) throws {
+        var document = try loadChecklist(for: recordingID)
+        func optional(_ text: String) -> String? {
+            let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            return value.isEmpty ? nil : value
+        }
+        if let original {
+            guard let index = document.items.firstIndex(where: { $0.id == original.id }), document.items[index] == original else { throw ChecklistError.changed }
+            document.items[index].title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            document.items[index].owner = optional(owner)
+            document.items[index].due = optional(due)
+            if document.items[index].title != original.title || document.items[index].owner != original.owner || document.items[index].due != original.due {
+                document.items[index].sourceQuote = nil
+                document.items[index].transcriptFingerprint = nil
+            }
+        } else {
+            document.items.append(ChecklistItem(id: UUID(), title: title.trimmingCharacters(in: .whitespacesAndNewlines), owner: optional(owner), due: optional(due), isComplete: false,
+                                                createdAt: Date(), sourceQuote: nil, transcriptFingerprint: nil, importKey: nil))
+        }
+        try writeChecklist(document)
     }
 
     static func readableDuration(at url: URL) -> TimeInterval? {

@@ -152,3 +152,112 @@ final class NotesEditingTests: XCTestCase {
     }
 
 }
+
+extension NotesEditingTests {
+    @MainActor
+    private func featureFixture() throws -> (RecordingStore, LocalNotes, SuggestedAction, URL) {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("CedarFeatures-\(UUID())")
+        let store = RecordingStore(root: root)
+        let item = try store.create()
+        try store.finish(id: item.id, duration: 10, status: .saved)
+        let transcript = try store.saveTranscript(Transcript(recordingID: item.id, localeID: "en-US", provider: "test",
+            segments: [TranscriptSegment(startMS: 2000, endMS: 9000, text: "Maya will test Cedar on Friday.")]))
+        let text = """
+        Summary
+        Maya will test Cedar on Friday.
+
+        Action items
+        • Test Cedar
+          Owner: Maya · Due: Friday
+          Source: “Maya will test Cedar on Friday.”
+
+        Suggested follow-ups · Not commitments
+        • What should we test next?
+        """
+        let notes = LocalNotes(recordingID: item.id, transcriptRevision: transcript.revision,
+                               transcriptFingerprint: LocalNotes.fingerprint(transcript), modelID: "test",
+                               createdAt: Date(), processingSeconds: 1, text: text)
+        try store.saveNotes(notes)
+        return (store, notes, try XCTUnwrap(SuggestedAction.parse(text).first), root)
+    }
+
+    func testSourceReferencesSpanSegmentsAndOfferRepeatedOccurrences() {
+        let first = TranscriptSegment(startMS: 0, endMS: 1000, text: "Maya will")
+        let second = TranscriptSegment(startMS: 1000, endMS: 2000, text: "test Cedar on Friday.")
+        let third = TranscriptSegment(startMS: 5000, endMS: 6000, text: "Maya will test Cedar on Friday.")
+        let transcript = Transcript(recordingID: UUID(), localeID: "en-US", provider: "test", segments: [first, second, third])
+        let matches = TranscriptSources.locations(for: "MAYA WILL\nTEST CEDAR ON FRIDAY.", in: transcript)
+        XCTAssertEqual(matches.map(\.startMS), [0, 5000])
+        XCTAssertEqual(matches.map(\.endMS), [2000, 6000])
+        XCTAssertTrue(TranscriptSources.locations(for: "An invented sentence", in: transcript).isEmpty)
+        XCTAssertTrue(TranscriptSources.locations(for: "  ", in: transcript).isEmpty)
+    }
+
+    @MainActor
+    func testChecklistImportIsExplicitIdempotentAndSurvivesNotesEditsAndTrash() throws {
+        let (store, notes, action, root) = try featureFixture()
+        defer { try? FileManager.default.removeItem(at: root) }
+        XCTAssertTrue(try store.loadChecklist(for: notes.recordingID).items.isEmpty)
+        let item = try store.addChecklistAction(action, notes: notes)
+        XCTAssertEqual(item.owner, "Maya")
+        XCTAssertEqual(item.due, "Friday")
+        try store.setChecklistComplete(item, recordingID: notes.recordingID, complete: true)
+        let duplicate = try store.addChecklistAction(action, notes: notes)
+        XCTAssertEqual(duplicate.id, item.id)
+        XCTAssertTrue(duplicate.isComplete)
+        let reopened = RecordingStore(root: root)
+        XCTAssertEqual(try reopened.loadChecklist(for: notes.recordingID).items.count, 1)
+        try reopened.editNotes(notes, text: notes.text + "\nHuman correction")
+        XCTAssertTrue(try reopened.loadChecklist(for: notes.recordingID).items[0].isComplete)
+        try reopened.moveToRecentlyDeleted(reopened.recordings[0])
+        XCTAssertThrowsError(try reopened.loadChecklist(for: notes.recordingID))
+        try reopened.restore(reopened.deletedRecordings[0])
+        XCTAssertEqual(try reopened.loadChecklist(for: notes.recordingID).items[0].id, item.id)
+    }
+
+    @MainActor
+    func testChecklistEditsRemoveAttributionAndRejectStaleSnapshotsOrTranscript() throws {
+        let (store, notes, action, root) = try featureFixture()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let item = try store.addChecklistAction(action, notes: notes)
+        try store.saveChecklistTask(recordingID: notes.recordingID, original: item, title: "My corrected task", owner: "Me", due: "Tomorrow")
+        let edited = try XCTUnwrap(store.loadChecklist(for: notes.recordingID).items.first)
+        XCTAssertNil(edited.sourceQuote)
+        XCTAssertNil(edited.transcriptFingerprint)
+        XCTAssertThrowsError(try store.saveChecklistTask(recordingID: notes.recordingID, original: item, title: "Stale", owner: "", due: ""))
+        XCTAssertThrowsError(try store.saveChecklistTask(recordingID: notes.recordingID, original: edited, title: " ", owner: "", due: ""))
+        var transcript = try XCTUnwrap(store.loadTranscript(for: notes.recordingID))
+        transcript.segments[0].text = "Maya will test Cedar on Monday."
+        _ = try store.saveTranscript(transcript)
+        XCTAssertThrowsError(try store.addChecklistAction(action, notes: notes))
+        XCTAssertEqual(try store.loadChecklist(for: notes.recordingID).items[0], edited)
+    }
+
+    @MainActor
+    func testCorruptChecklistIsPreservedAndCannotBeOverwrittenByAnAdd() throws {
+        let (store, notes, action, root) = try featureFixture()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let url = root.appendingPathComponent(notes.recordingID.uuidString).appendingPathComponent("checklist.json")
+        let damaged = Data("damaged checklist".utf8)
+        try damaged.write(to: url)
+        XCTAssertThrowsError(try store.addChecklistAction(action, notes: notes))
+        XCTAssertEqual(try Data(contentsOf: url), damaged)
+    }
+
+    @MainActor
+    func testLocalSearchFindsTitleTranscriptAndNotesAndExcludesTrash() throws {
+        let (store, notes, _, root) = try featureFixture()
+        defer { try? FileManager.default.removeItem(at: root) }
+        try store.rename(store.recordings[0], to: "Café pilot")
+        XCTAssertTrue(try LibrarySearch.scan(store.recordings, root: root, query: "CAFE").snippets[notes.recordingID]?.hasPrefix("Title") == true)
+        XCTAssertTrue(try LibrarySearch.scan(store.recordings, root: root, query: "Friday").snippets[notes.recordingID]?.hasPrefix("Transcript") == true)
+        XCTAssertTrue(try LibrarySearch.scan(store.recordings, root: root, query: "commitments").snippets[notes.recordingID]?.hasPrefix("Notes") == true)
+        XCTAssertTrue(try LibrarySearch.scan(store.recordings, root: root, query: "not present").snippets.isEmpty)
+        try Data("bad JSON".utf8).write(to: root.appendingPathComponent(notes.recordingID.uuidString).appendingPathComponent("notes.json"))
+        let incomplete = try LibrarySearch.scan(store.recordings, root: root, query: "Café")
+        XCTAssertEqual(incomplete.unreadableFiles, 1)
+        XCTAssertNotNil(incomplete.snippets[notes.recordingID])
+        try store.moveToRecentlyDeleted(store.recordings[0])
+        XCTAssertTrue(try LibrarySearch.scan(store.recordings, root: root, query: "Friday").snippets.isEmpty)
+    }
+}
