@@ -79,7 +79,7 @@ If saved transcript or notes JSON is damaged, Cedar tries the newest valid archi
 
 ## Current milestone
 
-See [development status](docs/development-status.md). The welcome and short local-recording checkpoints are verified on the actual iPhone 13 (iOS 26.5.2), including short audio capture and audible playback. Longer recording and interruption checks remain open. See [recording checks and limits](docs/recording-checks.md).
+See [development status](docs/development-status.md). Cedar 0.5.0 is installed on the actual iPhone 13 (now iOS 27.2.1). Short recording/playback, offline transcription and 360M notes have been verified by the user. The optional Qwen3 1.7B model passed simulator inference but was rejected by the physical-device test runner’s memory preflight; regular-app verification is pending. Longer recording and interruption checks remain open. See [recording checks and limits](docs/recording-checks.md).
 
 ## License
 
