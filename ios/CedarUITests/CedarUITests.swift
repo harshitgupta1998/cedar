@@ -9,6 +9,7 @@ final class CedarUITests: XCTestCase {
         throw XCTSkip("These tests use isolated simulator storage and must not run against a personal device library.")
         #endif
         continueAfterFailure = false
+        XCUIDevice.shared.orientation = .portrait
         app = XCUIApplication()
         app.launchArguments = ["--test-store", UUID().uuidString]
     }
@@ -156,8 +157,11 @@ final class CedarUITests: XCTestCase {
         portrait.lifetime = .keepAlways
         add(portrait)
         XCUIDevice.shared.orientation = .landscapeLeft
-        expectation(for: NSPredicate { _, _ in self.app.frame.width > self.app.frame.height }, evaluatedWith: app)
-        waitForExpectations(timeout: 5)
+        expectation(for: NSPredicate { _, _ in
+            let frame = self.app.frame
+            return frame.width > frame.height
+        }, evaluatedWith: app)
+        waitForExpectations(timeout: 10)
         app.swipeUp()
         XCTAssertTrue(app.buttons["recorder.start"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["recorder.start"].isHittable)
@@ -314,6 +318,78 @@ final class CedarUITests: XCTestCase {
         image.name = "Persistent action checklist"
         image.lifetime = .keepAlways
         self.add(image)
+    }
+
+    @MainActor
+    func testTranscriptFindNavigatesWrapsAndPlaysSelectedSegment() {
+        app.launchArguments += ["--library-features-fixture", "--transcript-navigation-fixture"]
+        openLibrary()
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recording.")).firstMatch.tap()
+        app.buttons["recording.transcript"].tap()
+        let field = app.textFields["transcript.find"]
+        XCTAssertTrue(field.waitForExistence(timeout: 10))
+        field.tap()
+        field.typeText("Cedar")
+        let status = app.staticTexts["transcript.findStatus"]
+        expectation(for: NSPredicate(format: "label CONTAINS %@", "2 matching segments"), evaluatedWith: status)
+        waitForExpectations(timeout: 5)
+        XCTAssertTrue(status.label.contains("1 of 2"))
+        app.buttons["transcript.nextMatch"].tap()
+        XCTAssertTrue(status.label.contains("2 of 2"))
+        XCTAssertTrue(app.buttons["Play from 00:06"].isHittable)
+        app.buttons["transcript.nextMatch"].tap()
+        XCTAssertTrue(status.label.contains("1 of 2"))
+        app.buttons["transcript.previousMatch"].tap()
+        XCTAssertTrue(status.label.contains("2 of 2"))
+        app.buttons["transcript.playMatch"].tap()
+        let player = app.buttons["transcript.playback"]
+        XCTAssertTrue(player.waitForExistence(timeout: 5))
+        XCTAssertEqual(player.label, "Pause")
+        player.tap()
+        XCTAssertEqual(player.label, "Play")
+        let selectedText = app.staticTexts["Jordan will review Cedar on Monday."]
+        XCTAssertTrue(selectedText.isHittable)
+        XCTAssertLessThan(selectedText.frame.maxY, player.frame.minY - 5)
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "Transcript match navigation"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        app.buttons["transcript.clearFind"].tap()
+        field.tap()
+        field.typeText("not present")
+        expectation(for: NSPredicate(format: "label == %@", "No matching segments"), evaluatedWith: status)
+        waitForExpectations(timeout: 5)
+        XCTAssertFalse(app.buttons["transcript.playMatch"].isEnabled)
+        XCTAssertFalse(app.buttons["transcript.nextMatch"].isEnabled)
+        app.buttons["transcript.clearFind"].tap()
+        XCTAssertTrue(status.label.contains("Find a word"))
+        app.buttons["Back to transcript start"].tap()
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Transcription options")).firstMatch.isHittable)
+    }
+
+    @MainActor
+    func testLibraryRecordControlAtLargestTextInPortraitAndLandscape() {
+        defer { XCUIDevice.shared.orientation = .portrait }
+        app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        let started = app.buttons["welcome.getStarted"]
+        XCTAssertTrue(started.waitForExistence(timeout: 10))
+        for _ in 0..<4 where !started.isHittable { app.swipeUp() }
+        started.tap()
+        XCTAssertTrue(app.buttons["recorder.start"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["recorder.start"].isHittable)
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "Library largest accessibility text — portrait"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        XCUIDevice.shared.orientation = .landscapeLeft
+        expectation(for: NSPredicate { _, _ in self.app.frame.width > self.app.frame.height }, evaluatedWith: app)
+        waitForExpectations(timeout: 10)
+        XCTAssertTrue(app.buttons["recorder.start"].isHittable)
+        let landscape = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        landscape.name = "Library largest accessibility text — landscape"
+        landscape.lifetime = .keepAlways
+        add(landscape)
     }
 
 }

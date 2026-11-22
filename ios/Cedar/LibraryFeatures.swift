@@ -281,3 +281,39 @@ private struct ChecklistEditor: View {
         }.tint(CedarStyle.forest)
     }
 }
+
+struct TranscriptFindRequest: Equatable {
+    let query: String
+    let revision: Int
+}
+
+struct TranscriptFindResult: Sendable {
+    var ids: [UUID] = []
+    var highlighted: [UUID: AttributedString] = [:]
+}
+
+enum TranscriptFind {
+    static func scan(_ segments: [TranscriptSegment], query: String) throws -> TranscriptFindResult {
+        let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return TranscriptFindResult() }
+        var result = TranscriptFindResult()
+        for segment in segments {
+            try Task.checkCancellation()
+            guard segment.text.range(of: query, options: [.caseInsensitive, .diacriticInsensitive]) != nil else { continue }
+            result.ids.append(segment.id)
+            var styled = AttributedString()
+            var remaining = segment.text.startIndex..<segment.text.endIndex
+            while let match = segment.text.range(of: query, options: [.caseInsensitive, .diacriticInsensitive], range: remaining) {
+                try Task.checkCancellation()
+                styled.append(AttributedString(String(segment.text[remaining.lowerBound..<match.lowerBound])))
+                var emphasized = AttributedString(String(segment.text[match]))
+                emphasized.inlinePresentationIntent = .stronglyEmphasized
+                styled.append(emphasized)
+                remaining = match.upperBound..<segment.text.endIndex
+            }
+            styled.append(AttributedString(String(segment.text[remaining])))
+            result.highlighted[segment.id] = styled
+        }
+        return result
+    }
+}

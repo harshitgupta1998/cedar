@@ -72,13 +72,19 @@ Model and runtime licenses are available in the app: [Qwen3 0.6B](https://huggin
 
 Optional real-inference tests require the pinned weight file in the test host's `Library/Application Support/CedarModels/` directory. CI skips model-dependent cases when weights are absent. Tests cover splitting without dropped words, input/cancellation limits, retired-weight cleanup, inference, storage/recovery, edits/restoration, download progress and failures.
 
-## Library tools · 0.8.0 feature branch
+## Library tools · 0.8.0
 
 - **Search:** use the library search field to find phrases in recording titles, saved transcripts and saved notes. Matching is case/accent insensitive, scans current recordings on-device in a cancellable background task, and shows an excerpt identifying the match. Recently Deleted and archived revisions are excluded. No persistent search index or network service is created. Unreadable or over-32-MB text files are skipped with a partial-results notice.
 - **Source playback:** Offline notes → **Listen to the source** offers matched summary statements and cited excerpts. Tap a timestamp to play from its transcript segment; repeated text offers multiple timestamps. These are segment starts, not exact word timings. Paraphrases without a literal match are not linked. Changed transcripts disable old-note source playback until regeneration.
 - **Action checklist:** explicitly tap **Add to checklist** under an action, or open **Action checklist** from recording details and add a task manually. Tasks can be edited and completed/reopened. Exact repeated imports preserve existing edits/completion. Checklists persist independently from generated notes, move with recordings into/out of Recently Deleted, and use atomic local writes. Invalid files are preserved rather than reset. Editing imported details removes generated source attribution. A changed source transcript is flagged. Due values are text; no Apple Reminders or calendar integration is performed.
 
-These additions are on `codex/source-search-actions`. They do not change the AI model or summary generation pipeline. Physical-device interaction checks for the new library tools remain open.
+These additions were merged in [PR #1](https://github.com/harshitgupta1998/cedar/pull/1). They do not change the AI model or summary generation pipeline. Physical-device interaction checks for the new library tools remain open.
+
+## Find within a transcript · 0.9.0 feature branch
+
+Open a recording → **Transcript** and use **Find in transcript**. Matching is case/accent insensitive and counts matching segments, with repeated words in one segment counted once. Matching text is emphasized. Previous/next controls wrap through segments and jump to the selected row. **Play match** starts audio at that segment's timestamp; the bottom playback bar offers pause/resume. **Start** returns to the beginning. Empty results disable match controls. Search highlights are cached, searches are cancellable/off the main thread, and edits invalidate results by transcript revision.
+
+This is phrase matching within individual segments; a phrase split across segments is not a find result. It does not change or upload the transcript, and it does not automatically play audio as you type. The source-excerpt feature above separately supports quotations spanning multiple segments. These additions are on `codex/transcript-navigation`.
 
 ## Recovery
 

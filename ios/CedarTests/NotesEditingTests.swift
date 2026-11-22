@@ -260,4 +260,31 @@ extension NotesEditingTests {
         try store.moveToRecentlyDeleted(store.recordings[0])
         XCTAssertTrue(try LibrarySearch.scan(store.recordings, root: root, query: "Friday").snippets.isEmpty)
     }
+    func testTranscriptFindPreservesUnicodeAndCountsSegmentsRatherThanOccurrences() throws {
+        let first = TranscriptSegment(startMS: 0, endMS: 2000, text: "Café café ☕ review.")
+        let second = TranscriptSegment(startMS: 2000, endMS: 6000, text: "A different discussion.")
+        let third = TranscriptSegment(startMS: 6000, endMS: 9000, text: "CAFE notes.")
+        let found = try TranscriptFind.scan([first, second, third], query: " CAFE ")
+        XCTAssertEqual(found.ids, [first.id, third.id])
+        XCTAssertEqual(found.highlighted[first.id].map { String($0.characters) }, first.text)
+        XCTAssertTrue(found.highlighted[first.id]!.runs.contains { $0.inlinePresentationIntent?.contains(.stronglyEmphasized) == true })
+        XCTAssertTrue(try TranscriptFind.scan([first, second], query: "not present").ids.isEmpty)
+        XCTAssertTrue(try TranscriptFind.scan([first], query: "  ").ids.isEmpty)
+    }
+
+    func testTranscriptFindHandlesHourLengthTextAndCancellation() async throws {
+        let segments = (0..<1440).map { index in
+            TranscriptSegment(startMS: index * 2500, endMS: (index + 1) * 2500,
+                              text: index == 10 || index == 1400 ? "We discussed the needle and next steps." : "We discussed the current topic and next steps.")
+        }
+        let result = try TranscriptFind.scan(segments, query: "needle")
+        XCTAssertEqual(result.ids, [segments[10].id, segments[1400].id])
+        let work = Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try TranscriptFind.scan(segments, query: "topic")
+        }
+        do { _ = try await work.value; XCTFail("Cancelled search must not publish results") }
+        catch is CancellationError { }
+    }
+
 }
