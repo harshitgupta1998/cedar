@@ -21,15 +21,20 @@ struct CedarApp: App {
                 do {
                     let format = AVAudioFormat(standardFormatWithSampleRate: 16_000, channels: 1)!
                     let file = try AVAudioFile(forWriting: store.audioURL(for: item.id), settings: format.settings)
-                    let frames: AVAudioFrameCount = args.contains("--library-features-fixture") ? 160_000 : 16_000
+                    let frames: AVAudioFrameCount = args.contains("--transcript-navigation-fixture") ? 320_000 : (args.contains("--library-features-fixture") ? 160_000 : 16_000)
                     let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frames)!
                     buffer.frameLength = frames
                     buffer.floatChannelData![0].initialize(repeating: 0, count: Int(frames))
                     try file.write(from: buffer)
                 }
-                try store.finish(id: item.id, duration: args.contains("--library-features-fixture") ? 10 : 1, status: .saved)
+                try store.finish(id: item.id, duration: args.contains("--transcript-navigation-fixture") ? 20 : (args.contains("--library-features-fixture") ? 10 : 1), status: .saved)
+                let fixtureSegments = args.contains("--transcript-navigation-fixture")
+                    ? [TranscriptSegment(startMS: 0, endMS: 2000, text: "Café review starts here."),
+                       TranscriptSegment(startMS: 2000, endMS: 6000, text: "Maya will test Cedar on Friday."),
+                       TranscriptSegment(startMS: 6000, endMS: 9000, text: "Jordan will review Cedar on Monday.")]
+                    : [TranscriptSegment(startMS: args.contains("--library-features-fixture") ? 2000 : 0, endMS: args.contains("--library-features-fixture") ? 9000 : 900, text: "Maya will test Cedar on Friday.")]
                 let transcript = try store.saveTranscript(Transcript(recordingID: item.id, localeID: "en-US", provider: "UI test",
-                    segments: [TranscriptSegment(startMS: args.contains("--library-features-fixture") ? 2000 : 0, endMS: args.contains("--library-features-fixture") ? 9000 : 900, text: "Maya will test Cedar on Friday.")]))
+                    segments: fixtureSegments))
                 try store.saveNotes(LocalNotes(recordingID: item.id, transcriptRevision: transcript.revision,
                     transcriptFingerprint: LocalNotes.fingerprint(transcript), modelID: NotesModel.qwen06.rawValue,
                     createdAt: Date(), processingSeconds: 1, text: args.contains("--library-features-fixture") ? "Summary\nMaya will test Cedar on Friday.\n\nAction items\n• Test Cedar\n  Owner: Maya · Due: Friday\n  Source: “Maya will test Cedar on Friday.”\n\nSuggested follow-ups · Not commitments\nNo additional follow-ups identified." : "Original notes"))
