@@ -6,6 +6,15 @@ struct LibraryView: View {
     @EnvironmentObject private var transcription: TranscriptionController
     @EnvironmentObject private var notes: NotesController
     @State private var showDeleted = false
+    @State private var searchText = ""
+    @State private var searchResult = LibrarySearchResult()
+    @State private var searchedQuery = ""
+    @State private var searching = false
+
+    private var query: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private var searchKey: LibrarySearchKey {
+        LibrarySearchKey(query: query, recordings: store.recordings, transcripts: store.transcriptUpdates, notes: store.notesUpdates)
+    }
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
@@ -83,8 +92,16 @@ struct LibraryView: View {
                 }
             }
 
-            let saved = store.recordings.filter { $0.id != audio.recordingID }
-            if saved.isEmpty {
+            let saved = (query.isEmpty ? store.recordings : store.recordings.filter { searchedQuery == query && searchResult.snippets[$0.id] != nil }).filter { $0.id != audio.recordingID }
+            if !query.isEmpty && (searching || searchedQuery != query) {
+                Section { ProgressView("Searching this iPhone…") }
+            }
+            if !query.isEmpty && searchResult.unreadableFiles > 0 {
+                Section { Text("Some saved text couldn’t be searched. Recordings and their audio have been kept.").font(.footnote) }
+            }
+            if saved.isEmpty && !query.isEmpty && !searching && searchedQuery == query {
+                Section { ContentUnavailableView.search(text: query).accessibilityIdentifier("library.noSearchResults") }
+            } else if saved.isEmpty && query.isEmpty {
                 Section {
                     VStack(spacing: 16) {
                         Image(systemName: "waveform")
@@ -112,6 +129,10 @@ struct LibraryView: View {
                                 Text("\(item.createdAt.formatted(date: .abbreviated, time: .shortened)) · \(audioTime(item.duration))")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
+                                if !query.isEmpty, let snippet = searchResult.snippets[item.id] {
+                                    Text(snippet).font(.subheadline).foregroundStyle(.secondary).lineLimit(3)
+                                        .accessibilityIdentifier("search.match.\(item.id)")
+                                }
                                 if item.status != .saved {
                                     Text(item.status.label)
                                         .font(.caption)
@@ -124,6 +145,24 @@ struct LibraryView: View {
                         .disabled(audio.recordingID != nil || audio.isPreparing)
                     }
                 }
+            }
+        }
+        .searchable(text: $searchText, prompt: "Titles, transcripts and notes")
+        .task(id: searchKey) {
+            let requested = query
+            guard !requested.isEmpty else { searchResult = LibrarySearchResult(); searchedQuery = ""; searching = false; return }
+            searching = true
+            do {
+                try await Task.sleep(for: .milliseconds(250))
+                let recordings = store.recordings
+                let root = store.root
+                let worker = Task.detached(priority: .userInitiated) { try LibrarySearch.scan(recordings, root: root, query: requested) }
+                let result = try await withTaskCancellationHandler { try await worker.value } onCancel: { worker.cancel() }
+                try Task.checkCancellation()
+                guard query == requested else { return }
+                searchResult = result; searchedQuery = requested; searching = false
+            } catch {
+                if !Task.isCancelled { searchResult = LibrarySearchResult(); searchedQuery = requested; searching = false }
             }
         }
         .listStyle(.insetGrouped)
@@ -219,6 +258,11 @@ struct RecordingDetailView: View {
                         Label(item.status.label, systemImage: "iphone")
                             .font(.footnote)
                     }
+
+                    NavigationLink { ChecklistView(recordingID: recordingID) } label: {
+                        Label("Action checklist", systemImage: "checklist")
+                    }
+                    .accessibilityIdentifier("recording.checklist")
 
                     VStack(spacing: 24) {
                         Image(systemName: "waveform")
